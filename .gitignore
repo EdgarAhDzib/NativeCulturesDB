@@ -2,3 +2,5 @@ dev_notes
 node_modules
 csv_seeds
 keys.js
+populate_ids.js
+dump

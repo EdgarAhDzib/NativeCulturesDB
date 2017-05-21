@@ -1,0 +1,58 @@
+use native
+
+sample dump command:
+mongodump --db native --collection item_indexes
+
+Empty the source_refs array in the item_indexes collection, then refresh the population
+
+Node
+Express
+--> Then Mongo
+Working collections:
+content_fields
+ethn_fields
+item_index
+media_sources
+native_groups
+source_refs
+
+models / routes
+Browse by Subject
+Browse by Culture
+Item view
+(Keyword) search results
+Results by single Culture
+Results by single Subject
+! - All of the queries for media and sources should be run with the Item query --> cf. Fan the Flames for association
+
+db.native.update {}
+
+This didn't work, it seems to have removed duplicate content_ids from the source_refs collection instead of duplicate _ids from the item_indexes collection
+db.item_indexes.aggregate([{$unwind: '$source_refs'},{$group: {_id: '$_id',source_refs: {$addToSet: '$source_refs'} } },{$project: {'source_refs': '$source_refs'}}])
+
+Didn't work either
+item_indexes.aggregate([{ "$project": {"source_refs": { "$setUnion": [ "$source_refs", [] ] }}}])
+db.item_indexes.aggregate([{ "$unwind": "$source_refs" },{ "$group": {"_id": "$_id","source_refs": { "$addToSet": "$source_refs" }}}])
+
+--> Then React
+Reference the React routes for the webpack.config.js
+
+DONE:
+! -- This version was too long, had to abbreviate
+db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", period: "text", notes: "text", long_desc: "text", context: "text", research_notes: "text", display: "text", prim_doc: "text"} )
+
+--> db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", notes: "text", long_desc: "text", research_notes: "text"} )
+
+WORKING sample text searches:
+db.item_indexes.find( { $text: { $search: "shaman" } } ).limit(5)
+db.item_indexes.find( { $text: { $search: "spirit mask" } }, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).limit(5)
+--> 35 36 91 92 93 (mask)
+--> 35 36 91 223 93 (spirit mask)
+
+! - All of the documents after 36 in native_groups are duplicates from source_refs and can be deleted
+Associations:
+Culture native_groups-->Item
+Subject ethn_fields-->Item
+Item-->Content_fields
+Item-->Sources
+Item-->Media

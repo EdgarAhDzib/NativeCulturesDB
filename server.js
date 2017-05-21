@@ -8,6 +8,22 @@ var bodyParser = require("body-parser");
 var Promise = require("bluebird");
 mongoose.Promise = Promise;
 
+const cultures = require("./config/routes/cultures");
+const content_fields = require("./config/routes/content_fields");
+const item = require("./config/routes/item");
+const media = require("./config/routes/media");
+const sources = require("./config/routes/sources");
+const subjects = require("./config/routes/subjects");
+const populate = require("./populate_ids");
+
+app.use('/', cultures);
+app.use('/', content_fields);
+app.use('/', item);
+app.use('/', media);
+app.use('/', sources);
+app.use('/', subjects);
+app.use('/', populate);
+
 var PORT = process.env.PORT || 8040;
 
 require('./webpack.config.js');
@@ -23,7 +39,7 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 var databaseUri = "mongodb://localhost/native";
-var MONGODB_URI = require('./keys.js');
+// var MONGODB_URI = require('./keys.js');
 
 //Option whether to connect to remote server or localhost
 if (process.env.MONGODB_URI) {
