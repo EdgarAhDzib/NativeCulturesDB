@@ -21,4 +21,16 @@ router.get('/culture/:id', (req, res) => {
 	});
 });
 
+router.get('/culturebrowse/:id', (req, res) => {
+	if (req.params.id != "" && req.params.id != null) {
+		Culture.find({group_name: new RegExp('^'+req.params.id, "i")}, (err, results) =>{
+			res.json(results);
+		});
+	}
+});
+
+router.get('/culturebrowse/', (req, res) => {
+	// Do nothing
+});
+
 module.exports = router;

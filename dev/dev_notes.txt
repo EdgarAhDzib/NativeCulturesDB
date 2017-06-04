@@ -1,13 +1,66 @@
 use native
+db.native.update {}
+sample dump command: mongodump --db native --collection item_indexes
+db.getCollection('item_indexes').find({_id:ObjectId('590d41180c4e0cfd29f6b843')})
+db.collection.dropIndexes()
 
-sample dump command:
-mongodump --db native --collection item_indexes
+TOP PRIORITIES:
 
-Empty the source_refs array in the item_indexes collection, then refresh the population
+Store and display uploaded images from public/assets/images directory
+Samples: Tlahzolteotl, Huitzilopochtli, Ozomahtli, Pahkola, Malo kachina, Decapitator, Tukano initiation, 7 Macaw, Yax K'uk' Mo', Soul Catchers
+--> Should be img_ref_1
 
-Node
-Express
---> Then Mongo
+db.media_sources.insert(
+  {
+  	content_id: NUM,
+    img_ref_1: URL,
+    museum: ""
+  }
+)
+
+db.item_indexes.update({id:NUM}, $set{media:_id})
+
+OTHER TASKS:
+
+If RRN provides new API key, incorporate into Node routes --> perhaps write an array of tribes / keywords, then run the API to populate the items collection
+--> And set an index to prevent redundancies
+--> Also use the key from Brooklyn Museum!
+
+models / routes (especially for login / postings)
+header / navbar
+Browse by Subject --> full tree, page
+Browse by Culture --> full tree, page
+--> Change cursor on mouse over to indicate link
+--> Clear all input fields and category terms when link is hit!
+Login
+Submit posting
+Posting may upload up to 4 images
+Indicate whether text, image(s), video in Link
+About
+How to use
+
+When a header is clicked, its full name should appear in the appropriate input field (not just the fragment)
+
+!-- Clicking on item should return to top of page / panel
+
+"Results for [SEARCH TERMS]" (perhaps limit size in display, curtail with "...")
+--> Limit and paginate search results, if possible
+--> If the item details are already passing through the Axios for each component, then most of the props are unnecessary
+!-- Is the Form component even being called?
+
+Review the HTML passing through the text entries: double braces may repair the problems with HTML content and NULL entries
+--> Or just clean it up!
+
+Check the group names, not all are listed in the native_groups collection (e.g., Huaxtec)
+
+Animate color background on cursor hover --> for items, cultures, fields
+
+Convert uploaded file names to unique key names
+
+(Perhaps random set of entries on front page)
+
+DONE:
+
 Working collections:
 content_fields
 ethn_fields
@@ -16,38 +69,30 @@ media_sources
 native_groups
 source_refs
 
-models / routes
-Browse by Subject
-Browse by Culture
-Item view
-(Keyword) search results
-Results by single Culture
-Results by single Subject
-! - All of the queries for media and sources should be run with the Item query --> cf. Fan the Flames for association
-
-db.native.update {}
-
-This didn't work, it seems to have removed duplicate content_ids from the source_refs collection instead of duplicate _ids from the item_indexes collection
-db.item_indexes.aggregate([{$unwind: '$source_refs'},{$group: {_id: '$_id',source_refs: {$addToSet: '$source_refs'} } },{$project: {'source_refs': '$source_refs'}}])
-
-Didn't work either
-item_indexes.aggregate([{ "$project": {"source_refs": { "$setUnion": [ "$source_refs", [] ] }}}])
-db.item_indexes.aggregate([{ "$unwind": "$source_refs" },{ "$group": {"_id": "$_id","source_refs": { "$addToSet": "$source_refs" }}}])
-
+Node
+Express
+--> Then Mongo
 --> Then React
 Reference the React routes for the webpack.config.js
 
-DONE:
-! -- This version was too long, had to abbreviate
-db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", period: "text", notes: "text", long_desc: "text", context: "text", research_notes: "text", display: "text", prim_doc: "text"} )
+Results by single Culture
+Results by single Subject
+Item view
+Search by Subject (autocomplete, link)
+Search by Culture (autocomplete, link) --> db.native_groups.find({"group_name": /.*m.*/})
+Click on thumbnails to see item, too
+Culture and Subject search results should be set in their respective components, to enable onClick functionality
+--> Also index each result by ID and a picture (if available)
 
---> db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", notes: "text", long_desc: "text", research_notes: "text"} )
+--> db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", notes: "text", long_desc: "text", research_notes: "text", prim_doc: "text"} )
 
 WORKING sample text searches:
 db.item_indexes.find( { $text: { $search: "shaman" } } ).limit(5)
 db.item_indexes.find( { $text: { $search: "spirit mask" } }, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).limit(5)
 --> 35 36 91 92 93 (mask)
 --> 35 36 91 223 93 (spirit mask)
+
+(Keyword) search results --> requires a Mongoose function, routes --> add prim_doc: "text" to compound index to get the text-based entries
 
 ! - All of the documents after 36 in native_groups are duplicates from source_refs and can be deleted
 Associations:
@@ -56,3 +101,27 @@ Subject ethn_fields-->Item
 Item-->Content_fields
 Item-->Sources
 Item-->Media
+
+! - All of the queries for media and sources should be run with the Item query --> cf. Fan the Flames for association
+
+Empty the source_refs array in the item_indexes collection, then refresh the population
+
+Redo the culture populating, very few results available
+
+The autocomplete should work better if the axios calls are run in the Main component rather than the imports
+Clear the {cultureEntries} in Main, the search isn't being properly reset!
+
+Video display --> db.media_sources.find({youtube:{$ne:"NULL"}})
+
+DIDN'T DO:
+--> Then display list when length >= 2 --> event.target.value(length)
+
+This didn't work, it seems to have removed duplicate content_ids from the source_refs collection instead of duplicate _ids from the item_indexes collection
+db.item_indexes.aggregate([{$unwind: '$source_refs'},{$group: {_id: '$_id',source_refs: {$addToSet: '$source_refs'} } },{$project: {'source_refs': '$source_refs'}}])
+
+Didn't work either
+item_indexes.aggregate([{ "$project": {"source_refs": { "$setUnion": [ "$source_refs", [] ] }}}])
+db.item_indexes.aggregate([{ "$unwind": "$source_refs" },{ "$group": {"_id": "$_id","source_refs": { "$addToSet": "$source_refs" }}}])
+
+! -- This version was too long, had to abbreviate
+db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", period: "text", notes: "text", long_desc: "text", context: "text", research_notes: "text", display: "text", prim_doc: "text"} )
