@@ -3,45 +3,82 @@ db.native.update {}
 sample dump command: mongodump --db native --collection item_indexes
 db.getCollection('item_indexes').find({_id:ObjectId('590d41180c4e0cfd29f6b843')})
 db.collection.dropIndexes()
+mongoexport --db native --collection media_sources --out media.json
+db.item_indexes.createIndex( { "item_id": 1 }, { sparse: true } )
+
+db.tests.dropIndexes()
+db.tests.createIndex( { "item_id": 1 }, { sparse: true } )
 
 TOP PRIORITIES:
+Browse by Subject --> full tree, page --> alphabetically, categorically
+Browse by Culture --> full tree, page --> alphabetically, geographically, linguistically grouped tree options
+Review for steps to build collapsible menu branches with react-router (already in the package.json)
+https://www.davidmeents.com/blog/creating-a-collapsible-navigation-menu-in-react-js/
 
-Store and display uploaded images from public/assets/images directory
-Samples: Tlahzolteotl, Huitzilopochtli, Ozomahtli, Pahkola, Malo kachina, Decapitator, Tukano initiation, 7 Macaw, Yax K'uk' Mo', Soul Catchers
---> Should be img_ref_1
+Remove Mentawai, from Sumatra! --> Test deletion with associated fields
 
-db.media_sources.insert(
-  {
-  	content_id: NUM,
-    img_ref_1: URL,
-    museum: ""
-  }
-)
+Test image URL with this link: https://anthro.amnh.org/anthropology/databases/common/image_dup.cfm?catno=16%20%20%2F%209586
 
-db.item_indexes.update({id:NUM}, $set{media:_id})
+Create a state-based switch before the return in the render for main.js, to determine whether to display a single item, culture menu, subject menu, or accessory component (e.g., About, Use, Login, etc.)
+
+Could possibly uninstall multer, but keep it until certain
+
+--> Or Vimeo
+--> Look into Mongoose associations for insert, cf. Fan the Flames
+Will also require fields for description, documentation, source, author, video, museum, etc.
+--> Cf. the modal used for the spell menu in Jaguar King --> react-modal-dialog
+--> See also the redux / reducer discussion in https://stackoverflow.com/questions/42758040/image-upload-with-reactjs
+--> And https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
+How to add subject fields? In modal or on page? --> And make sure that each subject field is listed only once
+
+!-- Not all source_refs are listed in item_indexes, e.g. the Brooklyn Museum Olmec pieces: array(0) --> if a source will be added, it must be associated, so $push _id to source_refs field in item_index
+
+--> Provide check to ensure that the Mongoose update not repeat itself after first switch
+"net::ERR_EMPTY_RESPONSE"
+
+Form should have auto-complete options for cultures and subjects, to encourage consistency
+--> Culture and title are required, other fields will be optional
+--> Each field in the item form should have its own props assignment
+Sample video: https://www.youtube.com/watch?v=gLDtQ_V7X3E Guarijio Pascola dance music
+
+(Keeping the item_id in item_indexes documents to prevent duplicate entries)
 
 OTHER TASKS:
 
-If RRN provides new API key, incorporate into Node routes --> perhaps write an array of tribes / keywords, then run the API to populate the items collection
---> And set an index to prevent redundancies
---> Also use the key from Brooklyn Museum!
+Move the search and browse options to header, which will remain at top during scrolling
+
+If insertId is still blank for new item, redirect to '/' but provide an ERROR message! Otherwise, if _id is proper, display the new item
+
+With new API populations for key terms, use axios to call the proper routes, to ensure that all are processed (in the proper order)
+
+After submitting edit, a new culture could be introduced --> Query as upsert, add to cultures list if not already present and associate with current item
 
 models / routes (especially for login / postings)
-header / navbar
-Browse by Subject --> full tree, page
-Browse by Culture --> full tree, page
---> Change cursor on mouse over to indicate link
---> Clear all input fields and category terms when link is hit!
+header / navbar --> Search forms within, constantly atop
 Login
-Submit posting
-Posting may upload up to 4 images
+Add an item --> modal / form available only for logged in users
+--> Edit item available only for correct access
+--> Supervisor will receive notification of item update for review and approval
 Indicate whether text, image(s), video in Link
 About
 How to use
 
+--> Change cursor on mouse over to indicate link
+Animate color background on cursor hover --> for items (pink), cultures (green), fields (blue)
+
+Clear all input fields and category terms when link is hit? --> Could be confusing
 When a header is clicked, its full name should appear in the appropriate input field (not just the fragment)
 
-!-- Clicking on item should return to top of page / panel
+Review img display attributes, some images getting distorted
+Video thumbnail in preview list
+Review the thumbnails, img_ref_1 should show the primary / front image, not "image not available" or back view, etc.
+Pics modal should have file type check: prepare a thumbnail only if the filetype is "image"
+
+Images in upload modal should be vertically and horizontally centered
+Set up logic to reset squares when a thumbnail is removed --> shift the image URLs to different states
+
+Only the first media element in item_indexes references a media_sources document with all fields populated
+--> Query to remove the orphaned media elements, without referent documents: media[1], media[2], etc. --> But check other examples!
 
 "Results for [SEARCH TERMS]" (perhaps limit size in display, curtail with "...")
 --> Limit and paginate search results, if possible
@@ -51,11 +88,18 @@ When a header is clicked, its full name should appear in the appropriate input f
 Review the HTML passing through the text entries: double braces may repair the problems with HTML content and NULL entries
 --> Or just clean it up!
 
-Check the group names, not all are listed in the native_groups collection (e.g., Huaxtec)
+When an item document is deleted, all of its associations should also be removed
+--> If a related field or document is removed from item association, the document itself should be modified or deleted
 
-Animate color background on cursor hover --> for items, cultures, fields
+On Yax K'uk' Mo' plaque: "Warning: EditForm is changing a controlled input of type text to be uncontrolled. Input elements should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://fb.me/react-controlled-components"
+(And museum info is in description textarea)
 
-Convert uploaded file names to unique key names
+Perhaps replace all "NULL" (string) values with "" blanks for the interest of consistency
+
+Select distinct group from item_indexes collection
+
+Not all content fields are showing item lists, e.g., the Le La La dancers
+--> Perhaps redo the query, so that ethn_fields query for all content_fields LIKE the name, query again for each associated item, and then display the item previews
 
 (Perhaps random set of entries on front page)
 
@@ -113,6 +157,178 @@ Clear the {cultureEntries} in Main, the search isn't being properly reset!
 
 Video display --> db.media_sources.find({youtube:{$ne:"NULL"}})
 
+Store and display uploaded images from assets/images directory
+Samples: Tlahzolteotl, Huitzilopochtli, Ozomahtli, Pahkola, Malo kachina, Decapitator, Tukano initiation, 7 Macaw, Yax K'uk' Mo', Soul Catchers
+--> Should be img_ref_1
+db.media_sources.insert({content_id: 222,"youtube" : "NULL",img_ref_2: "assets/images/vucubcaquix_left.jpg",museum: "Copan Site Museum"})
+db.media_sources.insert({content_id: 222,"youtube" : "NULL",img_ref_3: "assets/images/vucubcaquix_right.jpg",museum: "Copan Site Museum"})
+!-- All four image fields must be populated to show more than one image per item!
+db.item_indexes.update({id:NUM}, {$set{media:_id}})
+db.item_indexes.update({id:226}, {$set:{media:"5933751a5cbe4f06e85ffbe8"}})
+db.getCollection('media_sources').update({_id:ObjectId("59337be45cbe4f06e85ffbed")}, {$set:{"img_ref_1":"NULL","img_ref_3":"NULL"}})
+
+npm install request
+
+! -- it may be better to save the original collections and redo the populations from RRN and Brooklyn with the cleaner document setup, with all media content on a single row!
+
+Run within Mongo shell: db.media_sources.find({"img_ref_2":{"$ne":""}}).forEach(function(x){print(x.content_id, x.img_ref_2)})
+Update within Mongo shell, first for img_ref_2, then with img_ref_3:
+db.media_sources.find({"img_ref_3":{"$ne":""}}).forEach(function(x){ db.media_sources.update({content_id:x.content_id},{$set:{"img_ref_3":x.img_ref_3}},{multi:true}) })
+
+Eventually, better to have all image and youtube URLs on one row --> merge the fields into one document, then delete the unnecessary rows (and their respective ObjectId references in item_indexes.media)
+
+Because all files with img_ref_3 will also have a value for img_ref_2, only one delete operation is necessary:
+remove all media_sources documents where img_ref_2 has value and img_ref_1 is blank
+db.media_sources.find({"img_ref_1":"","img_ref_2":{$ne:""}})
+db.media_sources.deleteMany({"img_ref_1":"","img_ref_2":{$ne:""}})
+Revise the image map in the Main component
+
+Incorporate RRN API into Node routes --> perhaps write an array of tribes / keywords, then run the API to populate the items collection
+--> And set an index to prevent redundancies, keep the "id" column as an auto-increment
+--> Remove the "item_id" fields from documents currently listing "NULL"
+DONE: db.item_indexes.update({ item_id: "NULL" },{ $unset: { item_id: "" } },{ multi: true })
+DONE: db.item_indexes.createIndex( { "item_id": 1 }, { sparse: true } )
+--> Also use the API key from Brooklyn Museum! --> Then find an identifier that could be used to prevent duplicates
+
+--> List the fields from JSON:
+"id" NUM --> should be autoincrement, add 1 to max value: Item_index.find().sort({id: -1}).limit(1)
+"item_title" --> name
+"item_id" --> id (unique index, skip on duplicate --> also account for null values)
+"group" --> cultures (ARRAY, get first two: cultures[0].name, cultures[1].name)
+"period" --> creation_events (ARRAY: creation_events[0].end_year --> could convert to period later)
+
+case (institution_notes.title)
+"Notes" : "notes" --> institution_notes.text
+"Description" : "main_desc" --> institution_notes.text
+"Longer Description" : "long_desc" --> institution_notes.text
+"Context": "context" --> institution_notes.text
+"Research Notes" : "research_notes" --> institution_notes.text
+"Display History" : "display" --> institution_notes.text
+"Primary Documentation" : "prim_doc" --> institution_notes.text
+
+"if_published" : default 0,
+
+--> populate content_fields, media_sources, native_groups, source_refs
+"fields" ARRAY --> item_types, materials (ARRAY: item_types[i]name, materials[i].name)
+"media" ARRAY --> img_ref_[1-4] holding_institution.name
+var imgUrl = digital_objects[j].url;
+if (imgUrl.charAt(44) == "3") {
+    console.log("This URL has a 3!\n" + imgUrl);
+    imgUrl = imgUrl.replace("original","w800h600");
+}
+imgUrl = imgUrl.replace("//","https://");                
+switch (digital_objects[j].order)
+case 0 :
+img_ref_1 = imgUrl;
+case 1 :
+img_ref_2 = imgUrl;
+case 2 :
+img_ref_3 = imgUrl;
+case 3 :
+img_ref_4 = imgUrl;
+
+"source_refs" ARRAY --> original_record_url
+
+Originally didn't work, it inserted for every item
+// If culture not yet cataloged, add it to collection
+Tribe.findOne({group_name: allResults[i][2]}).exec(function(error, doc){
+	if (error) { console.log(error); }
+	if (doc) { console.log(allResults[i][2]); }
+	else {
+		var Culture = new Tribe({
+			group_name: allResults[i][2],
+			alt_name: allResults[i][3]
+		});
+		Culture.save(function(err, doc){
+			if (err) { console.log(err); }
+			else {}
+		});
+	}
+});
+
+DONE: Haida, Huichol, Yanomami, Aztec, Otomi, Osage, Moche, Chimu, Chavin, Pima, Shoshone, Lakota, Abenaki, Bororo, Olmec, Xingu, Tairona, Ojibwa, Seminole, Quechua, Aymara, Kiowa, Tarascan, Quiche, Zapotec, Cree, Yupik, Blackfoot, Mi'kmaq, Huron, Mohawk, Seneca, Jivaro, Mixtec, Tolowa, Kayapo, Zuni
+NONE: Yucatec, Yekwana, Oneida, Tzotzil, Toba, Ixil, Powhatan, Kickapoo, Huaxtec, Gaviao
+INSERT: Choctaw, Yurok, Quechua, Algonquian
+db.native_groups.insert({"group_name":"Yurok", "country_one":"USA"})
+
+Delete blank group_name documents!
+Update item_index documents with blank group
+Review item_index documents with "American" group
+Remove the second Olmec "Ears"!
+Remove the Kiowa Arrows and documents from associated collections
+Also review the references to ethn_id --> scan for orphaned documents
+
+Check the group names, not all are listed in the native_groups collection (e.g., Huaxtec, Aztec)
+
+"Cannot read property 'map' of null" error at link.js:29 --> this is coming from the uploads, not the external links
+e.g., Yaqui, Aztec --> six of the images in assets/images have no paths! Only Decapitator and Vucub Caquix do
+--> Populate media manually for these
+db.media_sources.insert({img_ref_1:"assets/images/ehecatl-ozomahtli.jpg"})
+db.media_sources.insert({img_ref_1:"assets/images/kuk_mo_plaque.jpg"})
+db.media_sources.insert({img_ref_1:"assets/images/malo_katchina.jpg"})
+db.media_sources.insert({img_ref_1:"assets/images/pahkola.jpg"})
+db.media_sources.insert({img_ref_1:"assets/images/soul-catchers.jpg"})
+db.media_sources.insert({img_ref_1:"assets/images/tikuna_jaguar_mask.jpg"})
+
+Redo associations for native_groups and ethn_fields
+Query items by _id instead of id, this should be reflected in the Link component and the item router
+
+Clear the previews when a new list is made from search or term
+
+Remove the "id" and "content_id" fields, which are inconsistent and confusing
+--> And then all component and query references thereto: item_indexes, content_fields, media_sources, source_refs
+db.getCollection('content_fields').update({"content_id":{$exists:true}}, {$unset:{"content_id":""}}, {multi:true})
+
+!-- Clicking on item should return to top of page / panel
+
+--> Event handler should look for "youtube" references and create thumbnail based on the 11 characters following "="
+--> Populate select options for culture, subject input fields with datalist element: https://www.w3schools.com/tags/tag_datalist.asp
+--> Post not currently working, will need to use the form version from the Reddit example, with form as the function argument
+--> The bodyParser must be defined *BEFORE* the routes, or req.body won't be properly formatted for post data
+
+--> Show only as many thumbnail DIVs as provided, go by count
+--> Add "X", "Cancel" to remove unwanted images from set --> reset its state property to blank string
+--> On thumbnail click, show menu of options: delete, replace, rearrange --> change state within modal
+--> Rearrangement options only when more than one image mapped from array
+
+Example image rearrangement: Apache pouch : _id:590d41180c4e0cfd29f6b8aa
+!-- Has two orphaned media, all fields are in the object referenced in media[0] --> media_sources _id:590d41eb0c4e0cfd29f6bdfe
+!-- This may not always be the case, cf. Wolf Mask, media[1] --> map across media array
+Current sequence: img_ref_1: https://mediaportal.rrncommunity.org/system/media/23/original/1243601EGHBQW3XHY.jpg
+img_ref_2: https://mediaportal.rrncommunity.org/system/media/23/original/1243602L6RAG5HKKR.jpg
+img_ref_3: https://mediaportal.rrncommunity.org/system/media/23/original/1243603PC9VWKFEOS.jpg
+
+Item editor can be used to review / edit documents based on access level: contributor, director, me
+--> Rearrange images, remove empty image refs, delete image refs and associated links (also delete files from server?)
+--> Edit bad HTML displays
+--> Load modal with setup similar to item upload, but with content already added --> Focus on description, culture, and images
+--> The "value" attributes need to be modifiable --> use onChange functions
+--> use hasOwnProperty method to determine whether to assign value to state properties in the EditForm component
+cf. https://stackoverflow.com/questions/11040472/how-to-check-if-object-property-exists-by-using-a-variable
+--> Write new routes to process the submissions --> Start with editing text and images
+
+(!-- limited the image size to 4mb in server.js)
+
+Picture and Subject submenus will require new components, properly sized to stack atop the main form modal
+--> Then pass the data from these to the ItemForm component, whose state will be updated
+Posting may upload up to 4 images (all 4 image fields must have default value to display properly)
+https://stackoverflow.com/questions/28750489/upload-file-component-with-reactjs
+Also: https://www.youtube.com/watch?v=WOTFmPkWbxo, starting from 49:00
+--> And preferably with Facebook-style modal to receive title, pictures, and other fields all in one posting
+Submit posting --> write form component and route
+--> The state properties for image files and urls may not be necessary for function getPictures() in main.js, look at removing them if the upload operates without them
+!-- Remember to rename the url for function uploadPicture in main.js when it reaches production
+
+Convert uploaded file names to unique key names, generated by timestamp
+Sample pic: Wayana ceiling disk
+
+This works, but the media property for item_indexes isn't getting properly populated
+fs.writeFile('./public/' + newFileOnePath, dataOne, {encoding: 'base64'}, function(err){
+	console.log(err);
+});
+
+Updated \NativeCulturesDB\node_modules\body-parser\lib\types\json.js --> Line 54 set from 100kb to 50mb
+
 DIDN'T DO:
 --> Then display list when length >= 2 --> event.target.value(length)
 
@@ -125,3 +341,53 @@ db.item_indexes.aggregate([{ "$unwind": "$source_refs" },{ "$group": {"_id": "$_
 
 ! -- This version was too long, had to abbreviate
 db.item_indexes.createIndex( { item_title: "text", main_desc: "text", group: "text", period: "text", notes: "text", long_desc: "text", context: "text", research_notes: "text", display: "text", prim_doc: "text"} )
+
+Value options for function pictureAction() in editform.js: "delete", "update", "1", "2", "3", "4"
+--> Deleted / rearranged image links should change the state for all other thumbnails in the display
+function rearrangePics() should be called in main.js, after the modal submit --> until then, keep the thumbnails rearranged by setting the state in editform.js
+
+https://stackoverflow.com/questions/10037563/node-js-base64-image-decoding-and-writing-to-file
+fs.writeFile("arghhhh.jpg", new Buffer(request.body.photo, "base64").toString(), function(err) {});
+This didn't work, error of post too large
+
+Then redirect, to prevent further processing attempts from post
+--> "net::ERR_EMPTY_RESPONSE"
+
+From https://stackoverflow.com/questions/15772394/how-to-upload-display-and-save-images-using-node-js-and-express
+var tempPath = req.files.file.path,
+    targetPath = path.resolve('./uploads/image.png');
+if (path.extname(req.files.file.name).toLowerCase() === '.png') {
+    fs.rename(tempPath, targetPath, function(err) {
+        if (err) throw err;
+        console.log("Upload completed!");
+    });
+} else {
+    fs.unlink(tempPath, function () {
+        if (err) throw err;
+        console.error("Only .png files are allowed!");
+    });
+}
+
+var data = '';
+req.on('data', function (chunk) {
+	data += chunk;
+});
+req.on('end', function () {
+	console.log('File uploaded');
+	res.writeHead(200);
+	res.end();
+});
+
+const multer = require("multer");
+const storage = multer.diskStorage({
+	destination: function(req, file, callback){
+		callback(null, '../../imageuploads');
+	},
+	filename: function(req, file, callback){
+		const extension = file.originalname.split('.').pop();
+		const newfilename = (new Date()).getTime() + '.' + extension;
+		callback(null, newfilename);
+	}
+});
+
+const upload = multer({ storage: storage });

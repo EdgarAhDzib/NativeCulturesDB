@@ -15,13 +15,13 @@ var Schema = mongoose.Schema;
 
 // Create the Field schema
 var FieldSchema = new Schema({
-  // Just a number
-  content_id: {
-    type: Number
-  },
   // Just a string
   ethn_id: {
     type: String
+  },
+  item_index: {
+    type: Schema.Types.ObjectId,
+    ref: "item_index"
   }
 });
 

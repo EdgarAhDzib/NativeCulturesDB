@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 // Create a schema class
 var Schema = mongoose.Schema;
 
-const Item_index = new Schema({
-    // id : {type: Number},
+const Test = new Schema({
+    id : {type: Number},
     item_title : {type: String},
-    item_id : {type: Number, unique: true},
+    item_id : {type: Number},
     group : {type: String},
     period : {type: String},
     notes : {type: String},
@@ -32,5 +32,4 @@ const Item_index = new Schema({
     }]
 });
 
-module.exports = mongoose.model('item_index', Item_index);
-
+module.exports = mongoose.model('test', Test);

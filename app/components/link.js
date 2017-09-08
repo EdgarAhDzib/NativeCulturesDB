@@ -28,7 +28,7 @@ export default class LinkID extends React.Component{
 		if (this.state.itemInfo != "") {
 			var thumbnail = this.state.itemInfo.media.map(function(image){
 				if (image.img_ref_1 != "") {
-					return <img src={image.img_ref_1} key={image._id} height="50" />
+					return <a href="#top"><img src={image.img_ref_1} key={image._id} height="50" /></a>
 				} else {
 					return null
 				}
@@ -38,7 +38,7 @@ export default class LinkID extends React.Component{
 		return (
 			<div className="col-sm-12" onClick={this.handleClick}>
 				<div className="col-sm-6">
-					<h4 key={this.props.value} value={this.props.value}>({this.props.value}) {this.props.item_title}</h4>
+					<h4 value={this.props.value}><a href="#top">{this.props.item_title}</a></h4>
 				</div>
 				<div className="col-sm-6">
 					{thumbnail}

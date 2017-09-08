@@ -9,4 +9,10 @@ router.get('/source/:id', (req, res) =>{
 	});
 });
 
+router.post('/updatesource', (req, res) => {
+	Source.findOneAndUpdate({_id:req.body.id}, {$set: req.body.body}, function(err,result){
+		if (err) { console.log(err); }
+	});
+});
+
 module.exports = router;

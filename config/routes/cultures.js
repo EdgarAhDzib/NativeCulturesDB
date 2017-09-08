@@ -4,7 +4,19 @@ const router = express.Router();
 const Culture = require('../models/cultures');
 
 router.get('/cultures', (req, res) => {
-	Culture.find({}, (err, results) => {
+	Culture.find({}, null, {sort: {group_name: 1}}, (err, results) => {
+		res.json(results);
+	});
+});
+
+router.get('/langfamilies', (req, res) => {
+	Culture.find().distinct('prim_family', (err, results) => {
+		res.json(results);
+	});
+});
+
+router.get('/langgroup/:name', (req, res) => {
+	Culture.find({prim_family: req.params.name}, (err, results) => {
 		res.json(results);
 	});
 });

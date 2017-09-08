@@ -1,0 +1,23 @@
+.modal {
+	background: no-repeat url('./modal_screen.jpg');
+	display:inline-block;
+	flex-wrap: wrap;
+	width: 700px;
+	height: 600px;
+	padding: 20px;
+}
+
+.upload-cell {
+	height: 230px;
+	width: 330px;
+}
+
+.picHolder {
+	height: 200px;
+	width: 200px;
+	margin: auto;
+}
+
+.cultureLink {
+	height: 45px;
+}
