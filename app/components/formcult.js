@@ -38,7 +38,7 @@ export default class FormCulture extends React.Component{
 					Browse by Culture <input
 						value={this.state.culture}
 						type="text"
-						id="id"
+						id="cultureForm"
 						onChange={this.handleCulture}
 					/><br/>
 					<button type="submit">Submit</button>

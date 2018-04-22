@@ -1,3 +1,36 @@
+TheEdgar E@GC St3psTowardDe$tiny
+SpiceMustFlow I@CN G3t2TheChopp@
+
+TOP PRIORITIES:
+Signup / Login options at top right, login true also upon user creation
+If logged in, disable further login and provide logout button / confirmation request
+User requires access level
+1: God
+2: Senior
+3: Professional
+4: Regular
+5: Contributor
+
+User may choose which culture groups to contribute
+Edit profile --> Select tribes in profile overview
+
+Users may edit / publish others' content only if higher rank and share same culture focus --> Add culture groups to User model, comments to Item model
+Match on culture (not required for God User)
+Alert on items added or updated, pending review --> new events since last login
+Component listing user's own items and/or items for review
+Edit options: Publish, Revise, Comment, Delete
+User reviews own items in list
+God User can see all items
+Comments will indicate from whom
+
+Password requires Caps, number, special chars --> RegEx, real-time display
+Created user will receive email indicating that account is under review and will be eligible for post CRUD after activation
+!-- Throw error on duplicate username or email
+
+Instructions page
+
+Will require SSL in Production to secure password posting
+
 use native
 db.native.update {}
 sample dump command: mongodump --db native --collection item_indexes
@@ -9,32 +42,31 @@ db.item_indexes.createIndex( { "item_id": 1 }, { sparse: true } )
 db.tests.dropIndexes()
 db.tests.createIndex( { "item_id": 1 }, { sparse: true } )
 
-TOP PRIORITIES:
+Choose language: English, Spanish
+
 Browse by Subject --> full tree, page --> alphabetically, categorically
 Browse by Culture --> full tree, page --> alphabetically, geographically, linguistically grouped tree options
 Review for steps to build collapsible menu branches with react-router (already in the package.json)
 https://www.davidmeents.com/blog/creating-a-collapsible-navigation-menu-in-react-js/
+--> Currently selected menu will have CSS z-index to overlap other menus, to prevent DIV pushing
 
-Remove Mentawai, from Sumatra! --> Test deletion with associated fields
+Remove Mentawai, from Sumatra! --> Test deletion with associated fields, images --> or at least unpublished, remove from search and browse options
+Images in upload modal should be vertically and horizontally centered
 
-Test image URL with this link: https://anthro.amnh.org/anthropology/databases/common/image_dup.cfm?catno=16%20%20%2F%209586
+New items should be associated with their respective cultures --> query to check whether they exist, create the culture and associate otherwise
+After submitting edit, a new culture could be introduced --> Query as upsert, add to cultures list if not already present and associate with current item
+--> Alert that this group doesn't exist yet --> notification to editor / admin
 
 Create a state-based switch before the return in the render for main.js, to determine whether to display a single item, culture menu, subject menu, or accessory component (e.g., About, Use, Login, etc.)
 
-Could possibly uninstall multer, but keep it until certain
-
 --> Or Vimeo
---> Look into Mongoose associations for insert, cf. Fan the Flames
-Will also require fields for description, documentation, source, author, video, museum, etc.
---> Cf. the modal used for the spell menu in Jaguar King --> react-modal-dialog
---> See also the redux / reducer discussion in https://stackoverflow.com/questions/42758040/image-upload-with-reactjs
---> And https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
 How to add subject fields? In modal or on page? --> And make sure that each subject field is listed only once
 
 !-- Not all source_refs are listed in item_indexes, e.g. the Brooklyn Museum Olmec pieces: array(0) --> if a source will be added, it must be associated, so $push _id to source_refs field in item_index
 
 --> Provide check to ensure that the Mongoose update not repeat itself after first switch
 "net::ERR_EMPTY_RESPONSE"
+--> return after sending headers
 
 Form should have auto-complete options for cultures and subjects, to encourage consistency
 --> Culture and title are required, other fields will be optional
@@ -44,6 +76,23 @@ Sample video: https://www.youtube.com/watch?v=gLDtQ_V7X3E Guarijio Pascola dance
 (Keeping the item_id in item_indexes documents to prevent duplicate entries)
 
 OTHER TASKS:
+Links on CSS Grid:
+https://www.youtube.com/watch?v=7kVeCqQCxlk (Intro presentation)
+https://www.youtube.com/watch?v=4YoWM9y0Szo&t=343s
+https://www.youtube.com/watch?v=jV8B24rSN5o&t=841s
+ 
+https://css-tricks.com/snippets/css/complete-guide-grid/
+
+!-- Unpublish --> article could still be restored
+When contributor updates an article, keep the original but have the new version available for review before publication --> replace original item_index document
+
+Could possibly uninstall multer, but keep it until certain
+
+Edit form needs new version of second modal for "Pictures" and "Subjects", currently using the pics upload
+
+Fields are inconsistent and sometimes useless - e.g., "or" --> remove from items and collection
+Field queries should be case-insensitive, currently not
+--> Use Mongoose to find _ids in content_fields collection, unset these values where they occur as "fields" array elements in item_indexes collection, then delete from content_fields
 
 Move the search and browse options to header, which will remain at top during scrolling
 
@@ -51,11 +100,11 @@ If insertId is still blank for new item, redirect to '/' but provide an ERROR me
 
 With new API populations for key terms, use axios to call the proper routes, to ensure that all are processed (in the proper order)
 
-After submitting edit, a new culture could be introduced --> Query as upsert, add to cultures list if not already present and associate with current item
-
 models / routes (especially for login / postings)
 header / navbar --> Search forms within, constantly atop
-Login
+Login --> https://www.youtube.com/watch?v=gg6r4-xaTyI for example
+--> Also https://docs.mongodb.com/manual/reference/method/db.auth/
+--> Assign editor access based on user level --> can update / edit own articles, at basic level --> assign cultural or ethnological categories at higher levels
 Add an item --> modal / form available only for logged in users
 --> Edit item available only for correct access
 --> Supervisor will receive notification of item update for review and approval
@@ -71,11 +120,6 @@ When a header is clicked, its full name should appear in the appropriate input f
 
 Review img display attributes, some images getting distorted
 Video thumbnail in preview list
-Review the thumbnails, img_ref_1 should show the primary / front image, not "image not available" or back view, etc.
-Pics modal should have file type check: prepare a thumbnail only if the filetype is "image"
-
-Images in upload modal should be vertically and horizontally centered
-Set up logic to reset squares when a thumbnail is removed --> shift the image URLs to different states
 
 Only the first media element in item_indexes references a media_sources document with all fields populated
 --> Query to remove the orphaned media elements, without referent documents: media[1], media[2], etc. --> But check other examples!
@@ -329,6 +373,21 @@ fs.writeFile('./public/' + newFileOnePath, dataOne, {encoding: 'base64'}, functi
 
 Updated \NativeCulturesDB\node_modules\body-parser\lib\types\json.js --> Line 54 set from 100kb to 50mb
 
+Test image URL with this link: https://anthro.amnh.org/anthropology/databases/common/image_dup.cfm?catno=16%20%20%2F%209586
+
+Review the thumbnails, img_ref_1 should show the primary / front image, not "image not available" or back view, etc.
+Pics modal should have file type check: prepare a thumbnail only if the filetype is "image"
+Use the Remove selector option --> If thumb1 removed, shift all images left
+Set up logic to reset squares when a thumbnail is removed --> shift the image URLs to different states
+
+--> Look into Mongoose associations for insert, cf. Fan the Flames
+Will also require fields for description, documentation, source, author, video, museum, etc.
+--> Cf. the modal used for the spell menu in Jaguar King --> react-modal-dialog
+--> See also the redux / reducer discussion in https://stackoverflow.com/questions/42758040/image-upload-with-reactjs
+--> And https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
+
+=======================================================================================
+
 DIDN'T DO:
 --> Then display list when length >= 2 --> event.target.value(length)
 
@@ -391,3 +450,11 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+!-- "express deprecated res.json(status, obj): Use res.status(status).json(obj) instead"
+--> Replace all instances of res.json()
+--> For older cases of two arguments passed through res.json(arg1, arg2)
+
+If page refreshed and login persists, pass the user data to ensure loggedIn: true
+Create User model, then add login functionality --> Create / Update / Delete options available only to users
+--> Display modal forms only when logged in and active is true

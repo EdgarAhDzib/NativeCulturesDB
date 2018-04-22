@@ -33,7 +33,7 @@ export default class FormSearch extends React.Component{
 					Keyword Search <input
 						value={this.state.keywords}
 						type="text"
-						id="id"
+						id="searchForm"
 						onChange={this.handleSearch}
 					/><br/>
 					<button type="submit">Search</button>

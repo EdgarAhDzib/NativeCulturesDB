@@ -9,13 +9,23 @@ export default class PicsSelector extends React.Component{
 			action: "",
 			image: "",
 			imageOptions: "",
+			urlField: false,
+			urlText: "",
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleSelect = this.handleSelect.bind(this);
+		this.handleText = this.handleText.bind(this);
 	}
 
 	handleSelect(event) {
 		this.setState({action: event.target.value});
+		if (event.target.value == "replaceURL") {
+			this.setState({urlField: true});
+		}
+	}
+
+	handleText(event) {
+		this.setState({urlText: event.target.value});
 	}
 
 	handleSubmit(event) {
@@ -26,6 +36,7 @@ export default class PicsSelector extends React.Component{
 		this.setState({
 			action: "",
 			image: "",
+			urlField: false,
 		});
 	}
 
@@ -46,14 +57,24 @@ export default class PicsSelector extends React.Component{
 				}
 			}
 		}
+		var urlInputField = "";
+		if (this.state.urlField) {
+			urlInputField = <input type="text" name="urlInputField" size="35" onChange={this.handleText} />
+		}
+
 		return (
 			<form onSubmit={this.handleSubmit}>
 				<select onChange={this.handleSelect}>
-					<option value="delete">Delete</option>
-					<option value="update">Update</option>
+					<option value="">Please choose an action</option>
+					<option value="remove">Remove Image</option>
+					<option value="replaceFile">Replace File</option>
+					<option value="replaceURL">Replace URL</option>
 					{imageListOptions}
 				</select>
 				<button type="submit">Select!</button>
+				<br/>
+				<br/>
+				{urlInputField}
 			</form>
 		)
 	}

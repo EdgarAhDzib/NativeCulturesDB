@@ -38,7 +38,7 @@ export default class FormSubject extends React.Component{
 					Browse by Subject <input
 						value={this.state.subject}
 						type="text"
-						id="id"
+						id="subjectForm"
 						onChange={this.handleSubject}
 					/><br/>
 					<button type="submit">Submit</button>

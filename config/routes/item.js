@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const fs = require("fs");
+const passport = require('passport');
 
 const Item_index = require('../models/item');
 const Media = require('../models/media');
@@ -184,6 +185,7 @@ router.post('/additem', (req, res) => {
 	// Then res.redirect(), to prevent post refresh --> Ideally, get the newly stored item by querying on its _id, cf. router.get('/item/:id') above
 	// If insertId is still blank, redirect to '/' but provide an ERROR message! Otherwise, if _id is proper, display the new item
 	res.redirect('/');
+	return;
 /*
 	var image = req.body.base64;
 	var data = image.replace(/^data:image\/\w+;base64,/, '');

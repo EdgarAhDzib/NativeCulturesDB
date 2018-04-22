@@ -1,7 +1,7 @@
 var React = require("react");
 var axios = require("axios");
 var qs = require("qs");
-import FormID from "./formid";
+// import FormID from "./formid";
 import FormCulture from "./formcult";
 import FormSubject from "./formsubj";
 import FormSearch from "./formsearch";
@@ -12,6 +12,9 @@ import ItemForm from "./itemform";
 import PicsModal from "./picsmodal";
 import EditForm from "./editform";
 import CultMenu from "./cultmenu";
+import AboutNACD from "./aboutnacd";
+import UserForm from "./userform";
+import Login from "./loginform";
 import {ModalContainer, ModalBackground, ModalDialog} from "react-modal-dialog";
 
 export default class Main extends React.Component{
@@ -43,6 +46,8 @@ export default class Main extends React.Component{
 			imgThumbThree: "",
 			imgThumbFour: "",
 			mainPanel: "item", // for testing, then revert to "item"
+			loggedIn: false,
+			active: false
 		}
 		// this.setFormID = this.setFormID.bind(this);
 		this.setFormCult = this.setFormCult.bind(this);
@@ -62,6 +67,9 @@ export default class Main extends React.Component{
 		this.showEditModal = this.showEditModal.bind(this);
 		this.itemUpdate = this.itemUpdate.bind(this);
 		this.updatePanel = this.updatePanel.bind(this);
+		this.submitLogin = this.submitLogin.bind(this);
+		this.userLogout = this.userLogout.bind(this);
+		// this.submitUserForm = this.submitUserForm.bind(this);
 	}
 	/*
 	setFormID(form) {
@@ -132,6 +140,34 @@ export default class Main extends React.Component{
 				this.setState({searchMatch: response.data});
 			}.bind(this) );
 		}
+	}
+
+	submitUserForm(form) {
+		// axios POST if form contains valid fields
+		axios.post('/newuser', form).then(function(response){
+			console.log(response.data);
+			this.setState({loggedIn: response.data.loggedIn});
+		}.bind(this) );
+		// Then reset form and notify user of account status
+	}
+
+	submitLogin(form) {
+		axios.post('/login', form).then(function(response){
+			// console.log(response.data);
+			this.setState({
+				loggedIn: response.data.loggedIn,
+				active: response.data.active
+			});
+		}.bind(this) );
+	}
+
+	userLogout() {
+		axios.get('/logout').then(function(response){
+			this.setState({
+				loggedIn: false,
+				active: false
+			});
+		}.bind(this) );
 	}
 
 	itemSubmit(form) {
@@ -356,6 +392,13 @@ export default class Main extends React.Component{
 		axios.get("/cultures/").then(function(response) {
 			this.setState({allCultures: response.data});
 		}.bind(this) );
+		axios.get("/success").then(function(response){
+			// console.log(response.data);
+			this.setState({
+				loggedIn: response.data.loggedIn,
+				active: response.data.active
+			});
+		}.bind(this) );
 	}
 
 	componentWillUpdate(prevProps, prevState) {
@@ -413,8 +456,8 @@ export default class Main extends React.Component{
 		}
 
 		if (this.state.itemInfo !== "") {
-			var imagesFromArray = this.state.itemInfo.media.map(function(image){
-				youtube = image.youtube != "NULL" && image.youtube != null && image.youtube != "" ? <iframe width="400" height="225" src={"https://www.youtube.com/embed/" + image.youtube} frameBorder="0" allowFullScreen></iframe> : "";
+			var imagesFromArray = this.state.itemInfo.media.map(function(image,inc){
+				youtube = image.youtube != "NULL" && image.youtube != null && image.youtube != "" ? <iframe key={"youtube"+inc} width="400" height="225" src={"https://www.youtube.com/embed/" + image.youtube} frameBorder="0" allowFullScreen></iframe> : "";
 				img_ref_1 = image.img_ref_1 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_1}><img src={image.img_ref_1} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
 				img_ref_2 = image.img_ref_2 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_2}><img src={image.img_ref_2} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
 				img_ref_3 = image.img_ref_3 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_3}><img src={image.img_ref_3} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
@@ -432,7 +475,7 @@ export default class Main extends React.Component{
 			var display = this.state.itemInfo.display != "NULL" ? this.state.itemInfo.display : "";
 			var primDoc = this.state.itemInfo.prim_doc != "NULL" ? this.state.itemInfo.prim_doc : "";
 			var ethnFields = this.state.itemInfo.fields.map(function(field){
-				return <span> | <LinkSubj linkForSubj={linkForSubj} key={field._id} ethn_id={field.ethn_id}/> | </span>
+				return <span key={field._id}> | <LinkSubj linkForSubj={linkForSubj} ethn_id={field.ethn_id}/> | </span>
 				//{field.ethn_id} . </span>
 			});
 			var sourceRef = this.state.itemInfo.source_refs.map(function(ref, inc){
@@ -442,19 +485,19 @@ export default class Main extends React.Component{
 
 		if (this.state.cultMatches.length > 0) {
 			var tribeNames = this.state.cultMatches.map(function(tribe){
-				return <h3><LinkCult linkForCult={linkForCult} value={tribe.group_name} key={"tribe"+tribe.group_name} /></h3>
+				return <h3 key={"tribe"+tribe.group_name}><LinkCult linkForCult={linkForCult} value={tribe.group_name}/></h3>
 			})
 		}
 
 		if (this.state.subjMatches.length > 0) {
 			var topicNames = this.state.subjMatches.map(function(topic){
-				return <h3><LinkSubj linkForSubj={linkForSubj} ethn_id={topic.name} key={"subject"+topic.name} /></h3>
+				return <h3 key={"subject"+topic.name}><LinkSubj linkForSubj={linkForSubj} ethn_id={topic.name} /></h3>
 			})
 		}
 
 		if (this.state.allCultures.length > 0) {
-			var cultureOptions = this.state.allCultures.map(function(tribe){
-				return <div className="col-xs-6 col-sm-3 cultureLink"><h4><LinkCult linkForCult={linkForCult} value={tribe.group_name} /></h4></div>
+			var cultureOptions = this.state.allCultures.map(function(tribe, inc){
+				return <div key={"cultureName"+inc} className="col-xs-6 col-sm-3 cultureLink"><h4><LinkCult linkForCult={linkForCult} value={tribe.group_name} /></h4></div>
 			});
 		} else {
 			var cultureOptions = "";
@@ -500,6 +543,9 @@ export default class Main extends React.Component{
 						</div>
 					</div>
 			break;
+			case "aboutnacd" :
+				var panelContent = <AboutNACD/>
+			break;
 			default :
 				var panelContent = <div></div>
 			break;
@@ -508,12 +554,12 @@ export default class Main extends React.Component{
 		return (
 			<div>
 				{
-				this.state.isShowingModal ?
+				this.state.isShowingModal && this.state.loggedIn && this.state.active ?
 				<ModalContainer onClose={this.handleClose}>
 					<ModalBackground>
 						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%'}}>
 							<div className="modal">
-								{ this.state.editModal ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} />  : 
+								{ this.state.editModal ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
 									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal}
 									imgThumbOne={thumbOne} imgThumbTwo={thumbTwo} imgThumbThree={thumbThree} imgThumbFour={thumbFour}
 									fileOne={fileOne} fileTwo={fileTwo} fileThree={fileThree} fileFour={fileFour} />
@@ -532,17 +578,29 @@ export default class Main extends React.Component{
 						</ModalDialog>
 					</ModalBackground>
 				</ModalContainer>
-				: null}
+				: null }
 				<div className="col-sm-8">
 					<a id="top"></a>
 					{panelContent}
 				</div>
 				<div className="col-sm-4">
+					{
+					this.state.loggedIn ? <button onClick={this.userLogout}>Logout</button>
+						: <div>
+							<UserForm submitUserForm={this.submitUserForm} />
+							<Login submitLogin={this.submitLogin} />
+						</div>
+					}
+					<br/>
+					<h2><span onClick={() => this.updatePanel("aboutnacd")} >About</span></h2>
 					<FormSearch setFormKeyword={this.setFormKeyword} />
 					<FormCulture setFormCult={this.setFormCult} cultureList={this.cultureList} />
 					<h2><span onClick={() => this.updatePanel("cultalpha")} >Browse All Cultures</span></h2>
 					<FormSubject setFormSubj={this.setFormSubj} subjectList={this.subjectList} />
-					<h2><span onClick={this.showMainModal}>Add an item</span> | <span onClick={this.showEditModal}>Edit Item</span></h2>
+					{
+					this.state.loggedIn && this.state.active ?
+						<h2><span onClick={this.showMainModal}>Add an Item</span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Delete Item</span></h2>
+					: null }
 					<h2>{this.state.culture}</h2>
 					<h2>{this.state.subject}</h2>
 					{tribeNames}

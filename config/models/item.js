@@ -29,7 +29,8 @@ const Item_index = new Schema({
     source_refs: [{
         type: Schema.Types.ObjectId,
         ref: "source_ref"
-    }]
+    }],
+    comments: []
 });
 
 module.exports = mongoose.model('item_index', Item_index);

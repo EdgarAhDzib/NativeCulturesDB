@@ -40,6 +40,7 @@ export default class EditForm extends React.Component{
 		this.pictureAction = this.pictureAction.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 		this.rearrangePics = this.rearrangePics.bind(this);
+		this.shiftThumbs = this.shiftThumbs.bind(this);
 	}
 
 	handleTitle(event) {
@@ -104,15 +105,20 @@ export default class EditForm extends React.Component{
 	}
 
 	pictureAction(option) {
-		// console.log(option);
 		this.setState({isShowingModal:false});
-		// console.log(this.state['thumb'+option.image]);
 		switch (option.action) {
-			case "delete" :
-				console.log("Delete");
+			case "remove" :
+				this.shiftThumbs(option.image, option.imageOptions);
 				break;
-			case "update" :
-				console.log("Update");
+			case "replaceURL" :
+				if (option.urlText != "" && option.urlText.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+					var dynamicObj = {};
+					dynamicObj['thumb' + option.image] = option.urlText;
+					this.setState(dynamicObj);
+				}
+				break;
+			case "replaceFile" :
+				console.log("Replace File");
 				break;
 			case "1" :
 				this.rearrangePics(option.image, this.state['thumb'+option.image], "1", this.state.thumb1);
@@ -127,21 +133,30 @@ export default class EditForm extends React.Component{
 				this.rearrangePics(option.image, this.state['thumb'+option.image], "4", this.state.thumb4);
 				break;
 			default :
-				console.log("Default");
 				break;
 		}
 	}
 
-	rearrangePics(thumbA, urlA, thumbB, urlB) {
-		/*
-		var form = {
-			itemId: this.props.itemInfo._id,
-			firstThumb: thumbA.toString(),
-			firstUrl: urlA,
-			secondThumb: thumbB,
-			secondUrl: urlB
+	shiftThumbs(currThumb, allThumbs) {
+		var dynamicObj = {};
+		for (let i = currThumb; i <= allThumbs; i++) {
+			if (i == currThumb) {
+				dynamicObj['thumb' + i] = "";
+				this.setState(dynamicObj);
+			} else {
+				dynamicObj['thumb' + (i - 1)] = this.state['thumb'+i];
+				this.setState(dynamicObj);
+			}
+			if (i == allThumbs) {
+				dynamicObj['thumb' + i] = "";
+				this.setState(dynamicObj);
+			}
 		}
-		*/
+		// Update the number of thumbnails, pass the value of allThumbs - 1 so that the picsselector and edit form have the newly truncated number of thumbnail options
+		this.setState({imageList: allThumbs - 1});
+	}
+
+	rearrangePics(thumbA, urlA, thumbB, urlB) {
 		var rearrangeThumbs = {};
 		var thumbOne = 'thumb' + thumbA.toString();
 		var thumbTwo = 'thumb' + thumbB;
@@ -225,9 +240,9 @@ export default class EditForm extends React.Component{
 
 	render() {
 		// console.log(this.state);
-		var cultSelector = this.state.cultOptions.map(function(tribe){
+		var cultSelector = this.state.cultOptions.map(function(tribe, inc){
 			var alt = tribe.alt_name != "NULL" && tribe.alt_name != "" && tribe.hasOwnProperty('alt_name') ? " (" + tribe.alt_name + ")" : "";
-			return <option>{tribe.group_name}{alt}</option>
+			return <option key={"tribeOpt" + inc}>{tribe.group_name}{alt}</option>
 		});
 		return (
 		<div>
