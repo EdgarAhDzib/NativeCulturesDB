@@ -1,5 +1,12 @@
+Current branch is userLogin
+
 TheEdgar E@GC St3psTowardDe$tiny
 SpiceMustFlow I@CN G3t2TheChopp@
+
+Created user will receive notification indicating that account is under review and will be eligible for post CRUD after activation
+Use the Axios GET already prepared for user info, then no need to pass as props from Main component
+"Edit Item" should appear on only user's own
+User may choose which culture groups to contribute --> Edit profile --> Select tribes in profile overview
 
 TOP PRIORITIES:
 Signup / Login options at top right, login true also upon user creation
@@ -11,20 +18,20 @@ User requires access level
 4: Regular
 5: Contributor
 
-User may choose which culture groups to contribute
-Edit profile --> Select tribes in profile overview
+--> Available tribes in selector by user options (or all for God User)
 
 Users may edit / publish others' content only if higher rank and share same culture focus --> Add culture groups to User model, comments to Item model
 Match on culture (not required for God User)
 Alert on items added or updated, pending review --> new events since last login
-Component listing user's own items and/or items for review
 Edit options: Publish, Revise, Comment, Delete
-User reviews own items in list
 God User can see all items
-Comments will indicate from whom
+Comments will indicate from whom --> Visible to God, author, and contributor
+Add check on user's available cultures: cannot update to an unavailable group
+Any edit from user below Professional reverts article to unpublished, pending review
+
+!-- Render HTML in article content
 
 Password requires Caps, number, special chars --> RegEx, real-time display
-Created user will receive email indicating that account is under review and will be eligible for post CRUD after activation
 !-- Throw error on duplicate username or email
 
 Instructions page
@@ -43,6 +50,8 @@ db.tests.dropIndexes()
 db.tests.createIndex( { "item_id": 1 }, { sparse: true } )
 
 Choose language: English, Spanish
+
+(Groups *could* have user lists)
 
 Browse by Subject --> full tree, page --> alphabetically, categorically
 Browse by Culture --> full tree, page --> alphabetically, geographically, linguistically grouped tree options
@@ -458,3 +467,13 @@ const upload = multer({ storage: storage });
 If page refreshed and login persists, pass the user data to ensure loggedIn: true
 Create User model, then add login functionality --> Create / Update / Delete options available only to users
 --> Display modal forms only when logged in and active is true
+!-- Tribes in options don't match those in native_groups collection --> incorrect value in selector, should match the fields
+--> Tried to save kerchief as Huichol, group saved as "Huichol (Wixarika)"
+--> No logic to update native_groups upon item update --> Unset from one if saved in array, set to the updated
+
+Update lastLogin property per login
+
+Remove YouTube URL from Huichol Kerchief, shouldn't appear
+
+--> Upon account creation, send to User page / component to review / edit info
+User reviews own items in list --> Component listing user's own items and/or items for review and profile info

@@ -28,7 +28,7 @@ export default class LinkID extends React.Component{
 		if (this.state.itemInfo != "") {
 			var thumbnail = this.state.itemInfo.media.map(function(image){
 				if (image.img_ref_1 != "") {
-					return <a href="#top"><img src={image.img_ref_1} key={image._id} height="50" /></a>
+					return <a href="#top" key={image._id}><img src={image.img_ref_1} height="50" /></a>
 				} else {
 					return null
 				}

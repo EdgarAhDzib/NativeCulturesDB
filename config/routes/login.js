@@ -47,8 +47,12 @@ router.post("/login", passport.authenticate("local",{ successRedirect: '/success
 
 router.get("/success",  (req, res) => {
 	// console.log("Success route");
-	// console.log(req.user);
 	if (req.isAuthenticated()) {
+		console.log("Success login");
+		// Update user's login date
+		User.findOneAndUpdate({_id:req.user._id}, {$set: {lastLogin: Date.now()}}, function(err,result){
+			if (err) { console.log(err); }
+		});
 		// console.log("Logged in, send JSON content");
 		// Send properties
 		var sendObj = {
@@ -58,14 +62,16 @@ router.get("/success",  (req, res) => {
 			accessLevel: req.user.accessLevel,
 			active: req.user.active,
 			items: req.user.items,
+			cultures: req.user.cultures,
 			loggedIn: true
 		};
 		res.json(sendObj);
+		return;
 	} else {
-		// console.log("Login failed, do nothing");
+		console.log("Login failed, do nothing");
 		res.json({ loggedIn: false });
+		return;
 	}
-	return;
 });
 
 router.get("/fail",  (req, res) => {
@@ -82,7 +88,7 @@ router.get("/logout", (req, res) => {
 	req.flash("success_msg", "Logout successful");
 	if (req.isAuthenticated()) {
 		// console.log("Still logged in");
-		res.json("true");
+		res.json("true from logout");
 	} else {
 		// console.log("Logged out");
 		res.json("false");

@@ -1,7 +1,9 @@
 const express = require('express')
 const router = express.Router();
+const passport = require('passport');
 
 const Culture = require('../models/cultures');
+const User = require('../models/user');
 
 router.get('/cultures', (req, res) => {
 	Culture.find({}, null, {sort: {group_name: 1}}, (err, results) => {
@@ -39,6 +41,14 @@ router.get('/culturebrowse/:id', (req, res) => {
 			res.json(results);
 		});
 	}
+});
+
+router.get('/culturesbyuser/', (req, res) => {
+	if (!req.isAuthenticated() || !req.hasOwnProperty("user")) {
+		return;
+	}
+	console.log(req.user._id);
+	// Query for user by id, the groups property not accessed properly from req.user object
 });
 
 router.get('/culturebrowse/', (req, res) => {
