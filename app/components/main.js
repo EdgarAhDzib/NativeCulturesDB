@@ -15,6 +15,7 @@ import CultMenu from "./cultmenu";
 import AboutNACD from "./aboutnacd";
 import UserForm from "./userform";
 import Login from "./loginform";
+import UserInfo from "./userinfo";
 import {ModalContainer, ModalBackground, ModalDialog} from "react-modal-dialog";
 
 export default class Main extends React.Component{
@@ -47,7 +48,8 @@ export default class Main extends React.Component{
 			imgThumbFour: "",
 			mainPanel: "item", // for testing, then revert to "item"
 			loggedIn: false,
-			active: false
+			active: false,
+			userInfo: ""
 		}
 		// this.setFormID = this.setFormID.bind(this);
 		this.setFormCult = this.setFormCult.bind(this);
@@ -69,6 +71,8 @@ export default class Main extends React.Component{
 		this.updatePanel = this.updatePanel.bind(this);
 		this.submitLogin = this.submitLogin.bind(this);
 		this.userLogout = this.userLogout.bind(this);
+		this.updateUser = this.updateUser.bind(this);
+		this.updatePassword = this.updatePassword.bind(this);
 		// this.submitUserForm = this.submitUserForm.bind(this);
 	}
 	/*
@@ -145,7 +149,7 @@ export default class Main extends React.Component{
 	submitUserForm(form) {
 		// axios POST if form contains valid fields
 		axios.post('/newuser', form).then(function(response){
-			console.log(response.data);
+			// console.log(response.data);
 			this.setState({loggedIn: response.data.loggedIn});
 		}.bind(this) );
 		// Then reset form and notify user of account status
@@ -168,6 +172,14 @@ export default class Main extends React.Component{
 				active: false
 			});
 		}.bind(this) );
+	}
+
+	updateUser(firstName, lastName, cultures) {
+		console.log(firstName, lastName, cultures);
+	}
+
+	updatePassword(passWordCurr, passWordOne, passWordTwo) {
+		console.log(passWordCurr, passWordOne, passWordTwo);
 	}
 
 	itemSubmit(form) {
@@ -369,7 +381,7 @@ export default class Main extends React.Component{
 	uploadPicture(file, name) {
 		var d = new Date();
 		var timestamp = d.getTime();
-		console.log(timestamp + "." + name);
+		// console.log(timestamp + "." + name);
 		var fileName = timestamp + "." + name;
 		axios({
 			url: `/addmedia`,
@@ -395,6 +407,7 @@ export default class Main extends React.Component{
 		axios.get("/success").then(function(response){
 			// console.log(response.data);
 			this.setState({
+				userInfo: response.data,
 				loggedIn: response.data.loggedIn,
 				active: response.data.active
 			});
@@ -439,6 +452,7 @@ export default class Main extends React.Component{
 		var thumbThree = this.state.imgThumbThree;
 		var thumbFour = this.state.imgThumbFour;
 		var itemInfo = this.state.itemInfo;
+		var userInfo = this.state.userInfo;
 
 		if (this.state.cultureInfo != "" && this.state.cultureInfo != null && this.state.cultureInfo.items.length > 0) {
 			var cultureEntries = this.state.cultureInfo.items.map(function(item){
@@ -479,7 +493,8 @@ export default class Main extends React.Component{
 				//{field.ethn_id} . </span>
 			});
 			var sourceRef = this.state.itemInfo.source_refs.map(function(ref, inc){
-				return <p key={inc}><a href={ref.url} target="_blank">{ref.url}</a></p>
+				var contributor = ref.hasOwnProperty("contributor") && ref.contributor != "NULL" ? <p>Contributor: {ref.contributor}</p> : null;
+				return <div key={inc}>{contributor}<p><a href={ref.url} target="_blank">{ref.url}</a></p></div>
 			});
 		}
 
@@ -546,6 +561,9 @@ export default class Main extends React.Component{
 			case "aboutnacd" :
 				var panelContent = <AboutNACD/>
 			break;
+			case "userinfo" :
+				var panelContent = <UserInfo updateUser={this.updateUser} updatePassword={this.updatePassword} linkFromID={linkFromID} />
+			break;
 			default :
 				var panelContent = <div></div>
 			break;
@@ -592,6 +610,11 @@ export default class Main extends React.Component{
 						</div>
 					}
 					<br/>
+					{
+						this.state.loggedIn ? 
+							<h2><span onClick={() => this.updatePanel("userinfo")} >My Profile</span></h2>
+						: null
+					}
 					<h2><span onClick={() => this.updatePanel("aboutnacd")} >About</span></h2>
 					<FormSearch setFormKeyword={this.setFormKeyword} />
 					<FormCulture setFormCult={this.setFormCult} cultureList={this.cultureList} />

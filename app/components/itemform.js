@@ -127,7 +127,7 @@ export default class ItemForm extends React.Component{
 	render() {
 		var cultSelector = this.state.cultOptions.map(function(tribe, inc){
 			var alt = tribe.alt_name != "NULL" && tribe.alt_name != "" && tribe.hasOwnProperty('alt_name') ? " (" + tribe.alt_name + ")" : "";
-			return <option key={"tribeSel" + inc}>{tribe.group_name}{alt}</option>
+			return <option key={"tribeSel" + inc} value={tribe.group_name}>{tribe.group_name}{alt}</option>
 		});
 		return (
 			<form onSubmit={this.handleSubmit}>

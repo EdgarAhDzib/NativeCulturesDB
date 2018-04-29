@@ -217,7 +217,7 @@ export default class EditForm extends React.Component{
 			thumb3: this.props.itemInfo.media.length > 0 ? this.props.itemInfo.media[0].img_ref_3 : "",
 			thumb4: this.props.itemInfo.media.length > 0 ? this.props.itemInfo.media[0].img_ref_4 : "",
 			youtube: this.props.itemInfo.media.length > 0 && this.props.itemInfo.media[0].hasOwnProperty('youtube') && this.props.itemInfo.media[0].youtube != "NULL" ? this.props.itemInfo.media[0].youtube : "",
-			ytURL: this.props.itemInfo.media.length > 0 && this.props.itemInfo.media[0].hasOwnProperty('youtube') && this.props.itemInfo.media[0].youtube != "NULL" ? "https://www.youtube.com/watch?v=" + this.props.itemInfo.media[0].youtube : "",
+			ytURL: this.props.itemInfo.media.length > 0 && this.props.itemInfo.media[0].hasOwnProperty('youtube') && this.props.itemInfo.media[0].youtube != "NULL" && this.props.itemInfo.media[0].youtube != "" ? "https://www.youtube.com/watch?v=" + this.props.itemInfo.media[0].youtube : "",
 			museum: this.props.itemInfo.media.length > 0 && this.props.itemInfo.media[0].museum != "NULL" ? this.props.itemInfo.media[0].museum : "",
 			sourceURL: this.props.itemInfo.source_refs.length > 0 && this.props.itemInfo.source_refs[0].hasOwnProperty('url') ? this.props.itemInfo.source_refs[0].url : ""
 		});
@@ -242,7 +242,7 @@ export default class EditForm extends React.Component{
 		// console.log(this.state);
 		var cultSelector = this.state.cultOptions.map(function(tribe, inc){
 			var alt = tribe.alt_name != "NULL" && tribe.alt_name != "" && tribe.hasOwnProperty('alt_name') ? " (" + tribe.alt_name + ")" : "";
-			return <option key={"tribeOpt" + inc}>{tribe.group_name}{alt}</option>
+			return <option key={"tribeOpt" + inc} value={tribe.group_name}>{tribe.group_name}{alt}</option>
 		});
 		return (
 		<div>
