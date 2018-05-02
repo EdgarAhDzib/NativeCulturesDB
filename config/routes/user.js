@@ -35,6 +35,7 @@ router.post('/newuser/', (req, res) => {
 			itemInsertId = doc._id;
 			// Then send properties forward to User page
 			// Redo: some properties will be sent with the '/user' route
+			// Post into the login route to begin as user
 			var sendObj = {
 				firstName: firstName,
 				lastName: lastName,
@@ -56,11 +57,11 @@ router.get('/user', (req, res) => {
 	if (req.isAuthenticated()) {
 		User.findOne({_id:req.user._id})
 		.populate("items")
+		.populate("cultures")
 		.exec(function(error, doc){
 			if (error) {
 				console.log(error);
 			} else {
-				// console.log(doc);
 				// Do not send the password or any other sensitive properties
 				var sendObj = {
 					firstName: doc.firstName,

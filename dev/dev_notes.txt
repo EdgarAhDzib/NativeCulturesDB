@@ -1,16 +1,8 @@
-Current branch is userLogin
-
 TheEdgar E@GC St3psTowardDe$tiny
 SpiceMustFlow I@CN G3t2TheChopp@
-
-Created user will receive notification indicating that account is under review and will be eligible for post CRUD after activation
-Use the Axios GET already prepared for user info, then no need to pass as props from Main component
-"Edit Item" should appear on only user's own
-User may choose which culture groups to contribute --> Edit profile --> Select tribes in profile overview
+SevenMacaw V@AC Tl@hzo11i
 
 TOP PRIORITIES:
-Signup / Login options at top right, login true also upon user creation
-If logged in, disable further login and provide logout button / confirmation request
 User requires access level
 1: God
 2: Senior
@@ -18,10 +10,11 @@ User requires access level
 4: Regular
 5: Contributor
 
---> Available tribes in selector by user options (or all for God User)
-
+Created user will receive notification indicating that account is under review and will be eligible for post CRUD after activation
+User may choose which culture groups to contribute --> Edit profile --> Select tribes in profile overview
 Users may edit / publish others' content only if higher rank and share same culture focus --> Add culture groups to User model, comments to Item model
 Match on culture (not required for God User)
+
 Alert on items added or updated, pending review --> new events since last login
 Edit options: Publish, Revise, Comment, Delete
 God User can see all items
@@ -30,6 +23,8 @@ Add check on user's available cultures: cannot update to an unavailable group
 Any edit from user below Professional reverts article to unpublished, pending review
 
 !-- Render HTML in article content
+
+!-- Item insert has no checks --> also validate tribe name
 
 Password requires Caps, number, special chars --> RegEx, real-time display
 !-- Throw error on duplicate username or email
@@ -76,6 +71,8 @@ How to add subject fields? In modal or on page? --> And make sure that each subj
 --> Provide check to ensure that the Mongoose update not repeat itself after first switch
 "net::ERR_EMPTY_RESPONSE"
 --> return after sending headers
+
+On Tukano mask: "Warning: flattenChildren(...): Encountered two children with the same key, `.$undefined`. Child keys must be unique; when two children share a key, only the first child will be used."
 
 Form should have auto-complete options for cultures and subjects, to encourage consistency
 --> Culture and title are required, other fields will be optional
@@ -477,3 +474,12 @@ Remove YouTube URL from Huichol Kerchief, shouldn't appear
 
 --> Upon account creation, send to User page / component to review / edit info
 User reviews own items in list --> Component listing user's own items and/or items for review and profile info
+
+Current branch is userLogin
+Use the Axios GET already prepared for user info, then no need to pass as props from Main component
+
+"Edit Item" should appear on only user's own
+Available tribes in selector by user options (or all for God User)
+
+Signup / Login options at top right, login true also upon user creation
+If logged in, disable further login and provide logout button / confirmation request

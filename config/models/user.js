@@ -18,7 +18,10 @@ const UserSchema = new mongoose.Schema ({
 		type: Schema.Types.ObjectId,
 		ref: "item_index"
 	}],
-	cultures: []
+	cultures: [{
+		type: Schema.Types.ObjectId,
+		ref: "native_group"
+	}]
 });
 
 var User = module.exports = mongoose.model('user', UserSchema);

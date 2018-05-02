@@ -23,7 +23,8 @@ export default class ItemForm extends React.Component{
 			ytURL: "",
 			museum: "",
 			sourceURL: "",
-			cultOptions: []
+			cultOptions: [],
+			accessLevel: 5
 		}
 		this.handleCulture = this.handleCulture.bind(this);
 		this.handlePics = this.handlePics.bind(this);
@@ -106,8 +107,18 @@ export default class ItemForm extends React.Component{
 	}
 
 	componentDidMount() {
-		axios.get("/cultures/").then(function(response) {
-			this.setState({cultOptions: response.data});
+		axios.get("/user").then(function(response){
+			this.setState({
+				cultOptions: response.data.cultures,
+				accessLevel: response.data.accessLevel
+			});
+
+			// Superuser accesses all groups
+			if (this.state.accessLevel == 1) {
+				axios.get("/cultures/").then(function(response) {
+					this.setState({cultOptions: response.data});
+				}.bind(this) );
+			}
 		}.bind(this) );
 	}
 

@@ -51,6 +51,7 @@ export default class Main extends React.Component{
 			active: false,
 			userInfo: ""
 		}
+		var that = this;
 		// this.setFormID = this.setFormID.bind(this);
 		this.setFormCult = this.setFormCult.bind(this);
 		this.setFormSubj = this.setFormSubj.bind(this);
@@ -73,7 +74,7 @@ export default class Main extends React.Component{
 		this.userLogout = this.userLogout.bind(this);
 		this.updateUser = this.updateUser.bind(this);
 		this.updatePassword = this.updatePassword.bind(this);
-		// this.submitUserForm = this.submitUserForm.bind(this);
+		this.submitUserForm = this.submitUserForm.bind(this);
 	}
 	/*
 	setFormID(form) {
@@ -150,15 +151,23 @@ export default class Main extends React.Component{
 		// axios POST if form contains valid fields
 		axios.post('/newuser', form).then(function(response){
 			// console.log(response.data);
-			this.setState({loggedIn: response.data.loggedIn});
+			// this.setState({loggedIn: response.data.loggedIn});
 		}.bind(this) );
 		// Then reset form and notify user of account status
+		console.log(this);
+		// Log user in
+		var formProps = {
+			email: form.email,
+			password: form.password
+		};
+		this.submitLogin(formProps);
 	}
 
 	submitLogin(form) {
 		axios.post('/login', form).then(function(response){
 			// console.log(response.data);
 			this.setState({
+				userInfo: response.data,
 				loggedIn: response.data.loggedIn,
 				active: response.data.active
 			});
@@ -169,7 +178,8 @@ export default class Main extends React.Component{
 		axios.get('/logout').then(function(response){
 			this.setState({
 				loggedIn: false,
-				active: false
+				active: false,
+				userInfo: ""
 			});
 		}.bind(this) );
 	}
@@ -426,6 +436,8 @@ export default class Main extends React.Component{
 		// console.log(this.state.cultureInfo);
 		// console.log(this.state);
 		// console.log(this.state.itemInfo);
+		// console.log(this.state.loggedIn);
+		// console.log(this.state.userInfo);
 		/*
 		for (let i = 0; i < this.state.allCultures.length; i++) {
 			if (this.state.allCultures[i].items.length > 0) {
@@ -453,6 +465,13 @@ export default class Main extends React.Component{
 		var thumbFour = this.state.imgThumbFour;
 		var itemInfo = this.state.itemInfo;
 		var userInfo = this.state.userInfo;
+		// Item may be edited only if original to user
+		var editable = false;
+		if (this.state.itemInfo.hasOwnProperty("_id") && this.state.userInfo.hasOwnProperty("items") && this.state.userInfo.items.length > 0) {
+			if (this.state.userInfo.items.indexOf(this.state.itemInfo._id) > -1) {
+				editable = true;
+			}
+		}
 
 		if (this.state.cultureInfo != "" && this.state.cultureInfo != null && this.state.cultureInfo.items.length > 0) {
 			var cultureEntries = this.state.cultureInfo.items.map(function(item){
@@ -577,7 +596,7 @@ export default class Main extends React.Component{
 					<ModalBackground>
 						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%'}}>
 							<div className="modal">
-								{ this.state.editModal ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
+								{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
 									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal}
 									imgThumbOne={thumbOne} imgThumbTwo={thumbTwo} imgThumbThree={thumbThree} imgThumbFour={thumbFour}
 									fileOne={fileOne} fileTwo={fileTwo} fileThree={fileThree} fileFour={fileFour} />
@@ -622,7 +641,9 @@ export default class Main extends React.Component{
 					<FormSubject setFormSubj={this.setFormSubj} subjectList={this.subjectList} />
 					{
 					this.state.loggedIn && this.state.active ?
-						<h2><span onClick={this.showMainModal}>Add an Item</span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Delete Item</span></h2>
+						<h2><span onClick={this.showMainModal}>Add an Item</span>
+						{ editable ? <span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Remove Item</span></span> : null}
+						</h2>
 					: null }
 					<h2>{this.state.culture}</h2>
 					<h2>{this.state.subject}</h2>

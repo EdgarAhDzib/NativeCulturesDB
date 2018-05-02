@@ -79,7 +79,7 @@ export default class UserInfo extends React.Component{
 		var cultures = "";
 		if (this.state.cultures.length > 0) {
 			cultures = this.state.cultures.map(function(culture, inc){
-				return <h4 key={"userCulture"+inc}>{culture}</h4>;
+				return <h4 key={"userCulture"+inc}>{culture.group_name}</h4>;
 			});
 		}
 		var items = "";
