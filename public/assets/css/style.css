@@ -21,3 +21,32 @@
 .cultureLink {
 	height: 45px;
 }
+
+.header {
+	margin-bottom: 10px;
+}
+
+.headerTitle {
+	font-size: 3em;
+	color: #990000;
+}
+
+.headerSub {
+	font-size: 2em;
+	padding-left: 30px;
+}
+
+.footer {
+	margin-top: 50px;
+	/*margin-bottom: 15px;*/
+	background-color: #fdd1a3;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.icon {
+	margin: auto;
+}
+
+.linkItem {
+}

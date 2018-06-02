@@ -10,6 +10,7 @@ export default class FormSubject extends React.Component{
 			id : "",
 			culture: "",
 			subject: "",
+			subjMatches: []
 		}
 		this.handleSubject = this.handleSubject.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -17,7 +18,10 @@ export default class FormSubject extends React.Component{
 
 	handleSubject(event) {
 		this.setState({subject: event.target.value});
-		this.props.subjectList(event.target.value);
+		// this.props.subjectList(event.target.value);
+		axios.get('/subjbrowse/' + event.target.value).then(function(response){
+			this.setState({ subjMatches: response.data});
+		}.bind(this));
 	}
 
 	handleSubmit(event) {
@@ -32,6 +36,12 @@ export default class FormSubject extends React.Component{
 	}
 
 	render() {
+		if (this.state.subjMatches.length > 0) {
+			var subjects = this.state.subjMatches.map(function(subj, inc){
+				// console.log(subj);
+				return <option key={"subjSel" + inc} value={subj.name}>{subj.name}</option>
+			})
+		}
 		return (
 			<div>
 				<form onSubmit={this.handleSubmit}>
@@ -40,8 +50,16 @@ export default class FormSubject extends React.Component{
 						type="text"
 						id="subjectForm"
 						onChange={this.handleSubject}
-					/><br/>
-					<button type="submit">Submit</button>
+						list="subjects"
+						placeholder={this.state.subject}
+						className="form-control"
+					/>
+					<datalist id="subjects">{subjects}</datalist>
+					<div className="pull-right">
+						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
+							<span className="glyphicon glyphicon-search"></span> Search 
+						</button>
+					</div>
 				</form>
 			</div>
 		)
