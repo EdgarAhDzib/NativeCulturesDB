@@ -43,14 +43,16 @@ export default class Login extends React.Component{
 						type="email"
 						id="emailLogin"
 						onChange={this.handleUser}
+						className="form-control"
 					/><br/>
 					Password <input
 						value={this.state.password}
 						type="password"
 						id="LoginPW"
 						onChange={this.handlePW}
+						className="form-control"
 					/><br/>
-					<button type="submit">Submit</button>
+					<button type="submit">Login</button>
 				</form>
 			</div>
 		)

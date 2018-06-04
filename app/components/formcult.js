@@ -10,6 +10,7 @@ export default class FormCulture extends React.Component{
 			id : "",
 			culture: "",
 			subject: "",
+			cultMatches: []
 		}
 		this.handleCulture = this.handleCulture.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -17,7 +18,10 @@ export default class FormCulture extends React.Component{
 
 	handleCulture(event) {
 		this.setState({culture: event.target.value});
-		this.props.cultureList(event.target.value);
+		// this.props.cultureList(event.target.value);
+		axios.get('/culturebrowse/' + event.target.value).then(function(response){
+			this.setState({ cultMatches: response.data});
+		}.bind(this));
 	}
 
 	handleSubmit(event) {
@@ -32,16 +36,32 @@ export default class FormCulture extends React.Component{
 	}
 
 	render() {
+		if (this.state.cultMatches.length > 0) {
+			var tribeNames = this.state.cultMatches.map(function(tribe, inc){
+				var alt = tribe.alt_name != "NULL" && tribe.alt_name != "" && tribe.hasOwnProperty('alt_name') ? " (" + tribe.alt_name + ")" : "";
+				// return <h3 key={"tribe"+tribe.group_name}><LinkCult linkForCult={linkForCult} value={tribe.group_name}/></h3>
+				return <option key={"tribeSel" + inc} value={tribe.group_name}>{tribe.group_name}{alt}</option>
+			})
+		}
+
 		return (
 			<div>
-				<form onSubmit={this.handleSubmit}>
+				<form>
 					Browse by Culture <input
 						value={this.state.culture}
 						type="text"
 						id="cultureForm"
 						onChange={this.handleCulture}
-					/><br/>
-					<button type="submit">Submit</button>
+						list="tribes"
+						placeholder={this.state.culture}
+						className="form-control"
+					/>
+					<datalist id="tribes">{tribeNames}</datalist>
+					<div className="pull-right">
+						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
+							<span className="glyphicon glyphicon-search"></span> Search 
+						</button>
+					</div>
 				</form>
 			</div>
 		)

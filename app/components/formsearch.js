@@ -35,8 +35,14 @@ export default class FormSearch extends React.Component{
 						type="text"
 						id="searchForm"
 						onChange={this.handleSearch}
-					/><br/>
-					<button type="submit">Search</button>
+						placeholder={this.state.keywords}
+						className="form-control"
+					/>
+					<div className="pull-right">
+						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
+							<span className="glyphicon glyphicon-search"></span> Search 
+						</button>
+					</div>
 				</form>
 			</div>
 		)

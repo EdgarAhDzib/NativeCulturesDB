@@ -52,8 +52,13 @@ router.get('/randitem/', (req, res) => {
 	});
 });
 
-router.post('/search/:keywords', (req, res) => {
-	Item_index.find( { $text: { $search: req.params.keywords } }, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).limit(10)
+router.post('/search', (req, res) => {
+	var query = {$text: { $search: req.body.keywords }};
+	// If _id posted into body, exclude from search results
+	if (req.body.hasOwnProperty("_id")) {
+		query["_id"] = { $ne: req.body._id };
+	}
+	Item_index.find( query, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).limit(12)
 	.exec(function(error, doc) {
 		if (error) {
 			console.log(error);

@@ -30,9 +30,10 @@ export default class Main extends React.Component{
 			id: "",
 			culture: "",
 			subject: "",
-			cultMatches: [],
-			subjMatches: [],
+			// cultMatches: [],
+			// subjMatches: [],
 			searchMatch: [],
+			related: [],
 			keywords: "",
 			isShowingModal: false,
 			secondModal: false,
@@ -48,6 +49,7 @@ export default class Main extends React.Component{
 			imgThumbFour: "",
 			mainPanel: "item", // for testing, then revert to "item"
 			loggedIn: false,
+			newUserModal: false,
 			active: false,
 			userInfo: ""
 		}
@@ -59,8 +61,8 @@ export default class Main extends React.Component{
 		this.linkFromID = this.linkFromID.bind(this);
 		this.linkForSubj = this.linkForSubj.bind(this);
 		this.linkForCult = this.linkForCult.bind(this);
-		this.cultureList = this.cultureList.bind(this);
-		this.subjectList = this.subjectList.bind(this);
+		// this.cultureList = this.cultureList.bind(this);
+		// this.subjectList = this.subjectList.bind(this);
 		this.showMainModal = this.showMainModal.bind(this);
 		this.handleClose = this.handleClose.bind(this);
 		this.itemSubmit = this.itemSubmit.bind(this);
@@ -75,6 +77,7 @@ export default class Main extends React.Component{
 		this.updateUser = this.updateUser.bind(this);
 		this.updatePassword = this.updatePassword.bind(this);
 		this.submitUserForm = this.submitUserForm.bind(this);
+		this.showRelatedItems = this.showRelatedItems.bind(this);
 	}
 	/*
 	setFormID(form) {
@@ -108,7 +111,7 @@ export default class Main extends React.Component{
 			axios.get('/culture/' + form.culture).then(function(response) {
 				this.setState({cultureInfo: response.data});
 			}.bind(this) );
-		}	
+		}
 	}
 
 	setFormSubj(form) {
@@ -140,7 +143,7 @@ export default class Main extends React.Component{
 		});
 		if (results != "") {
 			// console.log(results);
-			axios.post('/search/' + results).then(function(response) {
+			axios.post('/search', {keywords: results}).then(function(response) {
 				// console.log(response.data);
 				this.setState({searchMatch: response.data});
 			}.bind(this) );
@@ -260,18 +263,33 @@ export default class Main extends React.Component{
 	linkFromID(linkId) {
 		this.setState({
 			id : linkId,
-			culture : "",
-			subject : "",
-			cultMatches: [],
-			subjMatches: [],
-			keywords: "",
 			mainPanel: "item",
 		});
 		if (linkId != "") {
 			axios.get('/item/' + linkId).then(function(response) {
 				this.setState({itemInfo: response.data});
+				this.showRelatedItems(response.data);
 			}.bind(this) );
 		}
+	}
+
+	showRelatedItems(itemInfo) {
+		if (itemInfo.hasOwnProperty("group") && itemInfo.hasOwnProperty("item_title")) {
+			var relatedKeywords = [];
+			relatedKeywords.push(itemInfo.group);
+			relatedKeywords.push(itemInfo.item_title);
+			if (itemInfo.hasOwnProperty("fields")) {
+				for (let i = 0; i < itemInfo.fields.length; i++) {
+					relatedKeywords.push(itemInfo.fields[i].ethn_id);
+				}
+			}
+			var keywdString = relatedKeywords.join(" ");
+			if (keywdString != "") {
+				axios.post('/search', {keywords: keywdString, _id: itemInfo._id}).then(function(response) {
+					this.setState({related: response.data});
+				}.bind(this) );
+			}
+		}		
 	}
 
 	linkForSubj(subj) {
@@ -304,18 +322,6 @@ export default class Main extends React.Component{
 				this.setState({cultureInfo: response.data});
 			}.bind(this) );
 		}
-	}
-
-	cultureList(culture) {
-		axios.get('/culturebrowse/' + culture).then(function(response){
-			this.setState({ cultMatches: response.data});
-		}.bind(this));
-	}
-
-	subjectList(subject) {
-		axios.get('/subjbrowse/' + subject).then(function(response){
-			this.setState({ subjMatches: response.data});
-		}.bind(this));
 	}
 
 	secondModal(type) {
@@ -406,10 +412,11 @@ export default class Main extends React.Component{
 	updatePanel(panel) {
 		this.setState({mainPanel: panel});
 	}
-
+	
 	componentDidMount() {
 		axios.get("/randitem/").then(function(response) {
 			this.setState({itemInfo: response.data});
+			this.showRelatedItems(response.data);
 		}.bind(this) );
 		axios.get("/cultures/").then(function(response) {
 			this.setState({allCultures: response.data});
@@ -438,6 +445,12 @@ export default class Main extends React.Component{
 		// console.log(this.state.itemInfo);
 		// console.log(this.state.loggedIn);
 		// console.log(this.state.userInfo);
+		// console.log(this.state.related);
+		if (this.state.related.length > 0) {
+			for (let i = 0; i < this.state.related.length; i++) {
+				console.log("Render", this.state.related[i]._id, this.state.related[i].item_title, this.state.related[i].group);
+			}
+		}
 		/*
 		for (let i = 0; i < this.state.allCultures.length; i++) {
 			if (this.state.allCultures[i].items.length > 0) {
@@ -455,14 +468,15 @@ export default class Main extends React.Component{
 		var img_ref_3 = "";
 		var img_ref_4 = "";
 		var museum = "";
-		var fileOne = this.state.fileOne;
-		var fileTwo = this.state.fileTwo;
-		var fileThree = this.state.fileThree;
-		var fileFour = this.state.fileFour;
-		var thumbOne = this.state.imgThumbOne;
-		var thumbTwo = this.state.imgThumbTwo;
-		var thumbThree = this.state.imgThumbThree;
-		var thumbFour = this.state.imgThumbFour;
+		var itemProps = {};
+		itemProps.fileOne = this.state.fileOne;
+		itemProps.fileTwo = this.state.fileTwo;
+		itemProps.fileThree = this.state.fileThree;
+		itemProps.fileFour = this.state.fileFour;
+		itemProps.imgThumbOne = this.state.imgThumbOne;
+		itemProps.imgThumbTwo = this.state.imgThumbTwo;
+		itemProps.imgThumbThree = this.state.imgThumbThree;
+		itemProps.imgThumbFour = this.state.imgThumbFour;
 		var itemInfo = this.state.itemInfo;
 		var userInfo = this.state.userInfo;
 		// Item may be edited only if original to user
@@ -474,27 +488,44 @@ export default class Main extends React.Component{
 		}
 
 		if (this.state.cultureInfo != "" && this.state.cultureInfo != null && this.state.cultureInfo.items.length > 0) {
-			var cultureEntries = this.state.cultureInfo.items.map(function(item){
-				return <LinkID linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} />
+			var cultureEntries = this.state.cultureInfo.items.map(function(item, inc){
+				while (inc < 12) { return <LinkID linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
 		}
-
-		if (this.state.searchMatch != [] && this.state.searchMatch != null && this.state.searchMatch.length > 0) {
+		// Display keyword search results
+		if (this.state.searchMatch && this.state.searchMatch.length > 0) {
 			if (this.state.keywords != "") {
-				var searchHeader = <h3>Results for '{this.state.keywords}'</h3>
+				var searchHeader = <h2>Results for '{this.state.keywords}'</h2>
 			}
-			var searchEntries = this.state.searchMatch.map(function(item){
-				return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} />
+			var searchEntries = this.state.searchMatch.map(function(item, inc){
+				while (inc < 12) { return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
+		} else {
+			var searchHeader = "";
+			var searchEntries = "";
+		}
+		// Display related items
+		if (this.state.mainPanel == "item" && this.state.related != [] && this.state.related != null && this.state.related.length > 0) {
+			var relatedHeader = <h3>Related Items</h3>
+			var relatedItems = this.state.related.map(function(item, inc){
+				return <div className="col-md-3 col-sm-4 col-xs-6" style={{height:"100px"}}><LinkID linkFromID={linkFromID} key={"search" + inc} value={item._id} item_title={item.item_title} height={100} /></div>
+			});
+		} else {
+			var relatedHeader = "";
+			var relatedItems = "";
 		}
 
 		if (this.state.itemInfo !== "") {
 			var imagesFromArray = this.state.itemInfo.media.map(function(image,inc){
 				youtube = image.youtube != "NULL" && image.youtube != null && image.youtube != "" ? <iframe key={"youtube"+inc} width="400" height="225" src={"https://www.youtube.com/embed/" + image.youtube} frameBorder="0" allowFullScreen></iframe> : "";
-				img_ref_1 = image.img_ref_1 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_1}><img src={image.img_ref_1} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
-				img_ref_2 = image.img_ref_2 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_2}><img src={image.img_ref_2} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
-				img_ref_3 = image.img_ref_3 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_3}><img src={image.img_ref_3} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
-				img_ref_4 = image.img_ref_4 != "" ? <div className="col-sm-6 imgMiddle" style={{height:375}} key={image.img_ref_4}><img src={image.img_ref_4} width="300" style={{maxHeight:375}} className=" img-responsive" /></div> : "";
+				let colSize = "col-sm-12";
+				if (image.img_ref_2 != "") { colSize = "col-sm-6"; }
+				if (image.img_ref_3 != "") { colSize = "col-sm-4"; }
+				if (image.img_ref_4 != "") { colSize = "col-sm-3"; }
+				img_ref_1 = image.img_ref_1 != "" ? <div className={colSize +" imgMiddle"} style={{height:375}} key={image.img_ref_1}><img src={image.img_ref_1} width="300" style={{maxHeight:375,margin:"auto"}} className=" img-responsive" /></div> : "";
+				img_ref_2 = image.img_ref_2 != "" ? <div className={colSize +" imgMiddle"} style={{height:375}} key={image.img_ref_2}><img src={image.img_ref_2} width="300" style={{maxHeight:375,margin:"auto"}} className=" img-responsive" /></div> : "";
+				img_ref_3 = image.img_ref_3 != "" ? <div className={colSize +" imgMiddle"} style={{height:375}} key={image.img_ref_3}><img src={image.img_ref_3} width="300" style={{maxHeight:375,margin:"auto"}} className=" img-responsive" /></div> : "";
+				img_ref_4 = image.img_ref_4 != "" ? <div className={colSize +" imgMiddle"} style={{height:375}} key={image.img_ref_4}><img src={image.img_ref_4} width="300" style={{maxHeight:375,margin:"auto"}} className=" img-responsive" /></div> : "";
 				museum = image.museum != "NULL" && image.museum != null ? image.museum : "";
 			});
 
@@ -517,18 +548,6 @@ export default class Main extends React.Component{
 			});
 		}
 
-		if (this.state.cultMatches.length > 0) {
-			var tribeNames = this.state.cultMatches.map(function(tribe){
-				return <h3 key={"tribe"+tribe.group_name}><LinkCult linkForCult={linkForCult} value={tribe.group_name}/></h3>
-			})
-		}
-
-		if (this.state.subjMatches.length > 0) {
-			var topicNames = this.state.subjMatches.map(function(topic){
-				return <h3 key={"subject"+topic.name}><LinkSubj linkForSubj={linkForSubj} ethn_id={topic.name} /></h3>
-			})
-		}
-
 		if (this.state.allCultures.length > 0) {
 			var cultureOptions = this.state.allCultures.map(function(tribe, inc){
 				return <div key={"cultureName"+inc} className="col-xs-6 col-sm-3 cultureLink"><h4><LinkCult linkForCult={linkForCult} value={tribe.group_name} /></h4></div>
@@ -540,9 +559,9 @@ export default class Main extends React.Component{
 		switch (this.state.mainPanel) {
 			case "item" :
 				var panelContent = <div>
-					<h1>{this.state.itemInfo.item_title}</h1>
-					<h2><LinkCult linkForCult={linkForCult} value={this.state.itemInfo.group} /></h2>
-					<div>{ethnFields}</div>
+					<div>
+						<span className="headerTitle">{this.state.itemInfo.item_title}</span> <span className="headerSub"><LinkCult linkForCult={linkForCult} value={this.state.itemInfo.group} /></span>
+					</div>
 					<div className="row">
 					{img_ref_1}
 					{img_ref_2}
@@ -550,6 +569,8 @@ export default class Main extends React.Component{
 					{img_ref_4}
 					</div>
 					<div>{youtube}</div>
+					<div>{ethnFields}</div>
+					<div>{sourceRef}</div>
 					<div>{ethnNotes}</div>
 					<div>{mainDesc}</div>
 					<div>{longDesc}</div>
@@ -558,7 +579,6 @@ export default class Main extends React.Component{
 					<div>{display}</div>
 					<div>{primDoc}</div>
 					<div>{museum}</div>
-					<div>{sourceRef}</div>
 					</div>
 				break;
 			case "cultmenu" :
@@ -587,17 +607,22 @@ export default class Main extends React.Component{
 				var panelContent = <div></div>
 			break;
 		}
-
 		return (
 			<div>
 				{
-				this.state.isShowingModal && this.state.loggedIn && this.state.active ?
+				this.state.isShowingModal  && this.state.loggedIn && this.state.active ?
+				<div className="modal">
+					{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
+						<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal} {...itemProps} />
+					}
+				</div>
+				/*
 				<ModalContainer onClose={this.handleClose}>
 					<ModalBackground>
-						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%'}}>
-							<div className="modal">
-								{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
-									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal}
+						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%', width:"70%"}}>
+							<div className="modal" style={{width:"100%"}}>
+								{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} style={{width:"100%"}} />  : 
+									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal} style={{width:"100%"}}
 									imgThumbOne={thumbOne} imgThumbTwo={thumbTwo} imgThumbThree={thumbThree} imgThumbFour={thumbFour}
 									fileOne={fileOne} fileTwo={fileTwo} fileThree={fileThree} fileFour={fileFour} />
 								}
@@ -615,47 +640,82 @@ export default class Main extends React.Component{
 						</ModalDialog>
 					</ModalBackground>
 				</ModalContainer>
+				*/
 				: null }
-				<div className="col-sm-8">
-					<a id="top"></a>
-					{panelContent}
+				{
+					this.state.newUserModal ?
+					<div className="modal loginModal">
+						<Login submitLogin={this.submitLogin} />
+						<UserForm submitUserForm={this.submitUserForm} />
+					</div>
+					: null
+				}
+				<div className="row header">
+					<div className="col-xs-2"><span style={{fontSize:"2.5em"}}>NACD</span><br/>The Native American Cultures Database</div>
+					<div className="col-xs-2"><FormSearch setFormKeyword={this.setFormKeyword} /></div>
+					<div className="col-xs-2">
+						<FormCulture setFormCult={this.setFormCult} /><br/>
+						<div onClick={() => this.updatePanel("cultalpha")} >Cultures List</div>
+					</div>
+					<div className="col-xs-2"><FormSubject setFormSubj={this.setFormSubj} /></div>
+					<div className="col-xs-2">
+						<div onClick={() => this.updatePanel("aboutnacd")} >About</div>
+					</div>
+					<div className="col-xs-2">
+						{
+							this.state.loggedIn ? 
+								<div>
+									<button onClick={this.userLogout}>Logout</button>
+									<span onClick={() => this.updatePanel("userinfo")} >My Profile</span>
+								</div>
+							: <div>Sign Up / Log In</div>
+						}
+						(Under construction!)
+					</div>
 				</div>
-				<div className="col-sm-4">
-					{
-					this.state.loggedIn ? <button onClick={this.userLogout}>Logout</button>
-						: <div>
-							<UserForm submitUserForm={this.submitUserForm} />
-							<Login submitLogin={this.submitLogin} />
-						</div>
-					}
-					<br/>
-					{
-						this.state.loggedIn ? 
-							<h2><span onClick={() => this.updatePanel("userinfo")} >My Profile</span></h2>
-						: null
-					}
-					<h2><span onClick={() => this.updatePanel("aboutnacd")} >About</span></h2>
-					<FormSearch setFormKeyword={this.setFormKeyword} />
-					<FormCulture setFormCult={this.setFormCult} cultureList={this.cultureList} />
-					<h2><span onClick={() => this.updatePanel("cultalpha")} >Browse All Cultures</span></h2>
-					<FormSubject setFormSubj={this.setFormSubj} subjectList={this.subjectList} />
-					{
-					this.state.loggedIn && this.state.active ?
-						<h2><span onClick={this.showMainModal}>Add an Item</span>
-						{ editable ? <span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Remove Item</span></span> : null}
+				<div className="row">
+					<div className="col-sm-8">
+						<a id="top"></a>
+						{panelContent}
+					</div>
+					<div className="col-sm-4">
+						{
+						this.state.loggedIn && this.state.active ?
+							<h2><span onClick={this.showMainModal}>Add an Item</span>
+							{ editable ? <span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Remove Item</span></span> : null}
+							</h2>
+						: null }
+						<h2>
+							{
+								this.state.culture ? <span>Results for {this.state.culture}</span> : ""
+							}
 						</h2>
-					: null }
-					<h2>{this.state.culture}</h2>
-					<h2>{this.state.subject}</h2>
-					{tribeNames}
-					{topicNames}
-					{searchHeader}
-					{searchEntries}
-					{cultureEntries}
+						<h2>
+							{
+								this.state.subject ? <span>Results for {this.state.subject}</span> : ""
+							}
+						</h2>
+						{searchHeader}
+						{searchEntries}
+						{cultureEntries}
+					</div>
+				</div>
+				<div className="row">
+					{relatedHeader}
+				</div>
+				<div className="row">
+					{relatedItems}
+				</div>
+				<div className="row footer">
+					<div className="col-sm-2" style={{fontSize:"1.5em",textAlign:"center"}}>Contact</div>
+					<div className="col-sm-2"><a href="https://github.com/EdgarAhDzib/" target="_blank"><img class="icon" src="assets/images/icons/github64.png" /></a></div>
+					<div className="col-sm-2"><a href="https://twitter.com/EdgarTlamatini" target="_blank"><img class="icon" src="assets/images/icons/Twitter_logo_blue.png" width="72" /></a></div>
+					<div className="col-sm-2"><a href="https://www.facebook.com/ShamansCross/" target="_blank"><img class="icon" src="assets/images/icons/fb-likebutton-online-72.png" /></a></div>
+					<div className="col-sm-2"><a href="https://www.linkedin.com/in/edgar-martin-del-campo-7ba775125/" target="_blank"><img class="icon" src="assets/images/icons/linkedin64.png" /></a></div>
+					<div className="col-sm-2"><a href="https://www.youtube.com/channel/UCju74A_kAhFnnyPjq3JXRBQ" target="_blank"><img class="icon" src="assets/images/icons/YouTube-logo-full_color.png" width="72" /></a></div>
 				</div>
 			</div>
 		)
 	}
 }
-// 
 //<FormID setFormID={this.setFormID} />
