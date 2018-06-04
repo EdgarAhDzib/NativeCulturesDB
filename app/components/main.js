@@ -49,6 +49,7 @@ export default class Main extends React.Component{
 			imgThumbFour: "",
 			mainPanel: "item", // for testing, then revert to "item"
 			loggedIn: false,
+			newUserModal: false,
 			active: false,
 			userInfo: ""
 		}
@@ -323,20 +324,6 @@ export default class Main extends React.Component{
 		}
 	}
 
-	/*
-	cultureList(culture) {
-		axios.get('/culturebrowse/' + culture).then(function(response){
-			this.setState({ cultMatches: response.data});
-		}.bind(this));
-	}
-
-	subjectList(subject) {
-		axios.get('/subjbrowse/' + subject).then(function(response){
-			this.setState({ subjMatches: response.data});
-		}.bind(this));
-	}
-	*/
-
 	secondModal(type) {
 		this.setState({
 			secondModal:true,
@@ -481,14 +468,15 @@ export default class Main extends React.Component{
 		var img_ref_3 = "";
 		var img_ref_4 = "";
 		var museum = "";
-		var fileOne = this.state.fileOne;
-		var fileTwo = this.state.fileTwo;
-		var fileThree = this.state.fileThree;
-		var fileFour = this.state.fileFour;
-		var thumbOne = this.state.imgThumbOne;
-		var thumbTwo = this.state.imgThumbTwo;
-		var thumbThree = this.state.imgThumbThree;
-		var thumbFour = this.state.imgThumbFour;
+		var itemProps = {};
+		itemProps.fileOne = this.state.fileOne;
+		itemProps.fileTwo = this.state.fileTwo;
+		itemProps.fileThree = this.state.fileThree;
+		itemProps.fileFour = this.state.fileFour;
+		itemProps.imgThumbOne = this.state.imgThumbOne;
+		itemProps.imgThumbTwo = this.state.imgThumbTwo;
+		itemProps.imgThumbThree = this.state.imgThumbThree;
+		itemProps.imgThumbFour = this.state.imgThumbFour;
 		var itemInfo = this.state.itemInfo;
 		var userInfo = this.state.userInfo;
 		// Item may be edited only if original to user
@@ -560,22 +548,6 @@ export default class Main extends React.Component{
 			});
 		}
 
-		/*
-		if (this.state.cultMatches.length > 0) {
-			var tribeNames = this.state.cultMatches.map(function(tribe){
-				var alt = tribe.alt_name != "NULL" && tribe.alt_name != "" && tribe.hasOwnProperty('alt_name') ? " (" + tribe.alt_name + ")" : "";
-				// return <h3 key={"tribe"+tribe.group_name}><LinkCult linkForCult={linkForCult} value={tribe.group_name}/></h3>
-				return <option key={"tribeSel" + inc} value={tribe.group_name}>{tribe.group_name}{alt}</option>
-			})
-		}
-
-		if (this.state.subjMatches.length > 0) {
-			var topicNames = this.state.subjMatches.map(function(topic){
-				return <h3 key={"subject"+topic.name}><LinkSubj linkForSubj={linkForSubj} ethn_id={topic.name} /></h3>
-			})
-		}
-		*/
-
 		if (this.state.allCultures.length > 0) {
 			var cultureOptions = this.state.allCultures.map(function(tribe, inc){
 				return <div key={"cultureName"+inc} className="col-xs-6 col-sm-3 cultureLink"><h4><LinkCult linkForCult={linkForCult} value={tribe.group_name} /></h4></div>
@@ -638,13 +610,19 @@ export default class Main extends React.Component{
 		return (
 			<div>
 				{
-				this.state.isShowingModal && this.state.loggedIn && this.state.active ?
+				this.state.isShowingModal  && this.state.loggedIn && this.state.active ?
+				<div className="modal">
+					{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
+						<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal} {...itemProps} />
+					}
+				</div>
+				/*
 				<ModalContainer onClose={this.handleClose}>
 					<ModalBackground>
-						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%'}}>
-							<div className="modal">
-								{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} />  : 
-									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal}
+						<ModalDialog onClose={this.handleClose} style={{top:'5%',left:'5%', width:"70%"}}>
+							<div className="modal" style={{width:"100%"}}>
+								{ this.state.editModal && editable ? <EditForm itemInfo={itemInfo} itemUpdate={this.itemUpdate} secondModal={this.secondModal} style={{width:"100%"}} />  : 
+									<ItemForm itemSubmit={this.itemSubmit} secondModal={this.secondModal} style={{width:"100%"}}
 									imgThumbOne={thumbOne} imgThumbTwo={thumbTwo} imgThumbThree={thumbThree} imgThumbFour={thumbFour}
 									fileOne={fileOne} fileTwo={fileTwo} fileThree={fileThree} fileFour={fileFour} />
 								}
@@ -662,7 +640,16 @@ export default class Main extends React.Component{
 						</ModalDialog>
 					</ModalBackground>
 				</ModalContainer>
+				*/
 				: null }
+				{
+					this.state.newUserModal ?
+					<div className="modal loginModal">
+						<Login submitLogin={this.submitLogin} />
+						<UserForm submitUserForm={this.submitUserForm} />
+					</div>
+					: null
+				}
 				<div className="row header">
 					<div className="col-xs-2"><span style={{fontSize:"2.5em"}}>NACD</span><br/>The Native American Cultures Database</div>
 					<div className="col-xs-2"><FormSearch setFormKeyword={this.setFormKeyword} /></div>
@@ -676,18 +663,14 @@ export default class Main extends React.Component{
 					</div>
 					<div className="col-xs-2">
 						{
-							this.state.loggedIn ? <button onClick={this.userLogout}>Logout</button>
-							: <div>
-								<UserForm submitUserForm={this.submitUserForm} />
-								<Login submitLogin={this.submitLogin} />
-							</div>
-						}
-							<br/>
-						{
 							this.state.loggedIn ? 
-								<h2><span onClick={() => this.updatePanel("userinfo")} >My Profile</span></h2>
-							: null
+								<div>
+									<button onClick={this.userLogout}>Logout</button>
+									<span onClick={() => this.updatePanel("userinfo")} >My Profile</span>
+								</div>
+							: <div>Sign Up / Log In</div>
 						}
+						(Under construction!)
 					</div>
 				</div>
 				<div className="row">

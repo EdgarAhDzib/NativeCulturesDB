@@ -1,10 +1,15 @@
 .modal {
-	background: no-repeat url('./modal_screen.jpg');
+	background: url('./modal_screen.jpg');
 	display:inline-block;
 	flex-wrap: wrap;
-	width: 700px;
+	/*width: 700px;*/
+	margin: auto;
 	height: 600px;
 	padding: 20px;
+}
+
+.loginModal {
+	width: 50%;
 }
 
 .upload-cell {

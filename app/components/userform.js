@@ -64,32 +64,37 @@ export default class UserForm extends React.Component{
 						type="text"
 						id="userFormFirst"
 						onChange={this.handleFirst}
+						className="form-control"
 					/><br/>
 					Last name <input
 						value={this.state.lastName}
 						type="text"
 						id="userFormLast"
 						onChange={this.handleLast}
+						className="form-control"
 					/><br/>
 					Username <input
 						value={this.state.username}
 						type="text"
 						id="userFormName"
 						onChange={this.handleName}
+						className="form-control"
 					/><br/>
 					Email <input
 						value={this.state.email}
 						type="email"
 						id="userFormEmail"
 						onChange={this.handleEmail}
+						className="form-control"
 					/><br/>
 					Password <input
 						value={this.state.password}
 						type="password"
 						id="userFormPW"
 						onChange={this.handlePW}
+						className="form-control"
 					/><br/>
-					<button type="submit">Submit</button>
+					<button type="submit">Create</button>
 				</form>
 			</div>
 		)
