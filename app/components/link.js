@@ -52,7 +52,7 @@ export default class LinkID extends React.Component{
 	*/
 
 	render() {
-		console.log("Link", this.state.itemInfo.item_title + ", " + this.state.itemInfo.group);
+		// console.log("Link", this.state.itemInfo.item_title + ", " + this.state.itemInfo.group);
 		if (this.state.itemInfo != "") {
 			var thumbnail = this.state.itemInfo.media.map(function(image){
 				if (image.img_ref_1 != "") {

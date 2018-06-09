@@ -51,9 +51,9 @@ export default class Main extends React.Component{
 			loggedIn: false,
 			newUserModal: false,
 			active: false,
-			userInfo: ""
+			userInfo: "",
+			pages: 0
 		}
-		var that = this;
 		// this.setFormID = this.setFormID.bind(this);
 		this.setFormCult = this.setFormCult.bind(this);
 		this.setFormSubj = this.setFormSubj.bind(this);
@@ -78,6 +78,7 @@ export default class Main extends React.Component{
 		this.updatePassword = this.updatePassword.bind(this);
 		this.submitUserForm = this.submitUserForm.bind(this);
 		this.showRelatedItems = this.showRelatedItems.bind(this);
+		this.turnPage = this.turnPage.bind(this);
 	}
 	/*
 	setFormID(form) {
@@ -105,7 +106,8 @@ export default class Main extends React.Component{
 			cultMatches: [],
 			subjMatches: [],
 			keywords: "",
-			searchMatch: []
+			searchMatch: [],
+			pages: 0
 		});
 		if (form.culture != "") {
 			axios.get('/culture/' + form.culture).then(function(response) {
@@ -122,7 +124,8 @@ export default class Main extends React.Component{
 			cultMatches: [],
 			subjMatches: [],
 			keywords: "",
-			searchMatch: []
+			searchMatch: [],
+			pages: 0
 		});
 		if (form.subject != "") {
 			axios.get('/subjects/' + form.subject).then(function(response) {
@@ -139,7 +142,8 @@ export default class Main extends React.Component{
 			cultMatches: [],
 			subjMatches: [],
 			keywords: results,
-			cultureInfo: []
+			cultureInfo: [],
+			pages: 0
 		});
 		if (results != "") {
 			// console.log(results);
@@ -299,7 +303,8 @@ export default class Main extends React.Component{
 			cultMatches: [],
 			subjMatches: [],
 			keywords: "",
-			searchMatch: []
+			searchMatch: [],
+			pages: 0
 		});
 		if (subj != "") {
 			axios.get('/subjects/' + subj).then(function(response) {
@@ -315,7 +320,8 @@ export default class Main extends React.Component{
 			cultMatches: [],
 			subjMatches: [],
 			keywords: "",
-			searchMatch: []
+			searchMatch: [],
+			pages: 0
 		});
 		if (culture != "") {
 			axios.get('/culture/' + culture).then(function(response) {
@@ -412,6 +418,10 @@ export default class Main extends React.Component{
 	updatePanel(panel) {
 		this.setState({mainPanel: panel});
 	}
+
+	turnPage(page) {
+		this.setState({pages:page});
+	}
 	
 	componentDidMount() {
 		axios.get("/randitem/").then(function(response) {
@@ -446,11 +456,13 @@ export default class Main extends React.Component{
 		// console.log(this.state.loggedIn);
 		// console.log(this.state.userInfo);
 		// console.log(this.state.related);
+		/*
 		if (this.state.related.length > 0) {
 			for (let i = 0; i < this.state.related.length; i++) {
 				console.log("Render", this.state.related[i]._id, this.state.related[i].item_title, this.state.related[i].group);
 			}
 		}
+		*/
 		/*
 		for (let i = 0; i < this.state.allCultures.length; i++) {
 			if (this.state.allCultures[i].items.length > 0) {
@@ -462,6 +474,7 @@ export default class Main extends React.Component{
 		var linkFromID = this.linkFromID;
 		var linkForSubj = this.linkForSubj;
 		var linkForCult = this.linkForCult;
+		var turnPage = this.turnPage;
 		var youtube = "";
 		var img_ref_1 = "";
 		var img_ref_2 = "";
@@ -481,34 +494,50 @@ export default class Main extends React.Component{
 		var userInfo = this.state.userInfo;
 		// Item may be edited only if original to user
 		var editable = false;
+		var pages = 0;
+		var pageTabs = "";
+		var dozen = 12 * this.state.pages;
 		if (this.state.itemInfo.hasOwnProperty("_id") && this.state.userInfo.hasOwnProperty("items") && this.state.userInfo.items.length > 0) {
 			if (this.state.userInfo.items.indexOf(this.state.itemInfo._id) > -1) {
 				editable = true;
 			}
 		}
 
-		if (this.state.cultureInfo != "" && this.state.cultureInfo != null && this.state.cultureInfo.items.length > 0) {
+		if (this.state.cultureInfo.items && this.state.cultureInfo.items.length > 0) {
+			pages = Math.ceil(this.state.cultureInfo.items.length / 12);
 			var cultureEntries = this.state.cultureInfo.items.map(function(item, inc){
-				while (inc < 12) { return <LinkID linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
+				while (inc >= dozen && inc < dozen + 12) { return <LinkID linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
 		}
 		// Display keyword search results
 		if (this.state.searchMatch && this.state.searchMatch.length > 0) {
+			pages = Math.ceil(this.state.searchMatch.length / 12);
 			if (this.state.keywords != "") {
 				var searchHeader = <h2>Results for '{this.state.keywords}'</h2>
 			}
 			var searchEntries = this.state.searchMatch.map(function(item, inc){
-				while (inc < 12) { return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
+				while (inc >= dozen && inc < dozen + 12) { return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
 		} else {
 			var searchHeader = "";
 			var searchEntries = "";
 		}
+		if (pages > 0) {
+			// Redo: initialize array, then map it with spans
+			var pageArray = [];
+			for (let i = 0; i < pages; i++) {
+				pageArray.push(i);
+			}
+			pageTabs = pageArray.map(function(element, inc){
+				return <div className="col-xs-6 col-sm-2" key={inc} onClick={() => turnPage(inc)}>{inc + 1}</div>
+			});
+		}
+
 		// Display related items
-		if (this.state.mainPanel == "item" && this.state.related != [] && this.state.related != null && this.state.related.length > 0) {
+		if (this.state.mainPanel == "item" && this.state.related && this.state.related.length > 0) {
 			var relatedHeader = <h3>Related Items</h3>
 			var relatedItems = this.state.related.map(function(item, inc){
-				return <div className="col-md-3 col-sm-4 col-xs-6" style={{height:"100px"}}><LinkID linkFromID={linkFromID} key={"search" + inc} value={item._id} item_title={item.item_title} height={100} /></div>
+				while (inc < 12) { return <div className="col-md-3 col-sm-4 col-xs-6" style={{height:"100px"}}><LinkID linkFromID={linkFromID} key={"search" + inc} value={item._id} item_title={item.item_title} height={100} /></div> }
 			});
 		} else {
 			var relatedHeader = "";
@@ -696,6 +725,9 @@ export default class Main extends React.Component{
 							}
 						</h2>
 						{searchHeader}
+						{
+							pageTabs && pageArray.length > 1 ? <div className="row"><div className="col-xs-6 col-sm-2">Pages:</div>{pageTabs}</div> : ""
+						}
 						{searchEntries}
 						{cultureEntries}
 					</div>

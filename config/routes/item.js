@@ -58,7 +58,7 @@ router.post('/search', (req, res) => {
 	if (req.body.hasOwnProperty("_id")) {
 		query["_id"] = { $ne: req.body._id };
 	}
-	Item_index.find( query, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).limit(12)
+	Item_index.find( query, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } )
 	.exec(function(error, doc) {
 		if (error) {
 			console.log(error);

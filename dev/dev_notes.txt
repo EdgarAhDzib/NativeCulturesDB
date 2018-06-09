@@ -1,10 +1,6 @@
-Replace the react-modal-dialog with Bootstrap, whose style is easier to control
-https://daveceddia.com/open-modal-in-react/
-Assign different sizes, properties for different modals with unique IDs: Add, Edit, User, Login, Pics
-
-Sliding navbar for mobile view
-
 Rewrite functions into ES6 format, to remove binding requirements from the constructor
+"Can only update a mounted or mounting component. This usually means you called setState() on an unmounted component. This is a no-op. Please check the code for the undefined component."
+--> May require unmounting components or removing the setState method
 
 Make queries case-insensitive! (Why does "shaman" yield no search results? And why does "cradle" not show all? --> Could be better to query on keywords rather than use array of _id keys)
 "Related items" by title, culture, and subjects (and show culture) as separate list, limit 12, after any search results --> separate the lists: "Search Results" vs. "Related Items"
@@ -13,7 +9,15 @@ Make queries case-insensitive! (Why does "shaman" yield no search results? And w
 Working until my manually created entries --> Creates very long delay --> Also not defining keys properly
 Clear form fields when an option is clicked, and the option itself should remain in right column: "Results for:" --> Don't clear if no results yielded, also indicate "No results found for [keywords]"
 
+Padding across item elements, especially subject list
+
 Current branch is layout
+
+Replace the react-modal-dialog with Bootstrap React, whose style could be easier to control
+https://daveceddia.com/open-modal-in-react/
+Assign different sizes, properties for different modals with unique IDs: Add, Edit, User, Login, Pics
+
+Sliding navbar for mobile view
 
 TheEdgar E@GC St3psTowardDe$tiny
 SpiceMustFlow I@CN G3t2TheChopp@
