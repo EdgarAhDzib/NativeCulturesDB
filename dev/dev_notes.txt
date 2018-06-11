@@ -1,17 +1,20 @@
+Move "Culture List" to beneath "About" and outline each
+Highlight culture and subjects in main panel with darker grey --> color code already available in style.css --> Outline culture to indicate it's a button
+https://www.sessions.edu/color-calculator/
+MONGODB_URI: mongodb://heroku_dqfc9vpn:p2lrckmeaboboi4cg911g4sug4@ds153980.mlab.com:53980/heroku_dqfc9vpn
+mongoimport -d heroku_dqfc9vpn -c users --type json --file C:/Users/Edgar/Documents/Websites/NativeCulturesDB/dump/users.json -h ds153980.mlab.com:53980 -u heroku_dqfc9vpn -p p2lrckmeaboboi4cg911g4sug4
 Rewrite functions into ES6 format, to remove binding requirements from the constructor
 "Can only update a mounted or mounting component. This usually means you called setState() on an unmounted component. This is a no-op. Please check the code for the undefined component."
 --> May require unmounting components or removing the setState method
 
 Make queries case-insensitive! (Why does "shaman" yield no search results? And why does "cradle" not show all? --> Could be better to query on keywords rather than use array of _id keys)
+--> Could remove ethn_fields altogether, cumbersome and inconsistent
 "Related items" by title, culture, and subjects (and show culture) as separate list, limit 12, after any search results --> separate the lists: "Search Results" vs. "Related Items"
 --> create distinct keyword array, remove common words such as "and", "or", "the", etc.
---> Search results should be limited to 12 on page, then arrows to scroll left or right --> if inc > 12, then display arrows and provide scroll options
 Working until my manually created entries --> Creates very long delay --> Also not defining keys properly
 Clear form fields when an option is clicked, and the option itself should remain in right column: "Results for:" --> Don't clear if no results yielded, also indicate "No results found for [keywords]"
 
-Padding across item elements, especially subject list
-
-Current branch is layout
+Current branch is master
 
 Replace the react-modal-dialog with Bootstrap React, whose style could be easier to control
 https://daveceddia.com/open-modal-in-react/
@@ -69,7 +72,7 @@ db.tests.createIndex( { "item_id": 1 }, { sparse: true } )
 
 Choose language: English, Spanish
 
-(Groups *could* have user lists)
+(Groups *could* have user lists --> But preferable to associate on the user documents themselves)
 
 Browse by Subject --> full tree, page --> alphabetically, categorically
 Browse by Culture --> full tree, page --> alphabetically, geographically, linguistically grouped tree options
@@ -519,3 +522,9 @@ FOOTER: Contact | GitHub | Twitter | Facebook | LinkedIn | YouTube
 
 Search results should replace item panel --> Item panel then "pushes" search results down, so that they remain on page
 --> Remove the "Submit" from Culture and Subject input fields, the onClick already sends the information
+
+Padding across item elements, especially subject list
+Search results should be limited to 12 on page, then arrows to scroll left or right --> if inc > 12, then display arrows and provide scroll options
+
+Indicate which page and / or item is selected, highlight it
+Grey background for side menu
