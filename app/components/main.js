@@ -426,7 +426,6 @@ export default class Main extends React.Component{
 	componentDidMount() {
 		axios.get("/randitem/").then(function(response) {
 			this.setState({itemInfo: response.data});
-			this.setState({id:response.data._id});
 			this.showRelatedItems(response.data);
 		}.bind(this) );
 		axios.get("/cultures/").then(function(response) {
@@ -498,17 +497,16 @@ export default class Main extends React.Component{
 		var pages = 0;
 		var pageTabs = "";
 		var dozen = 12 * this.state.pages;
-		var currId = this.state.id;
 		if (this.state.itemInfo.hasOwnProperty("_id") && this.state.userInfo.hasOwnProperty("items") && this.state.userInfo.items.length > 0) {
 			if (this.state.userInfo.items.indexOf(this.state.itemInfo._id) > -1) {
 				editable = true;
 			}
 		}
 
-		if (this.state.cultureInfo && this.state.cultureInfo.items && this.state.cultureInfo.items.length > 0) {
+		if (this.state.cultureInfo.items && this.state.cultureInfo.items.length > 0) {
 			pages = Math.ceil(this.state.cultureInfo.items.length / 12);
 			var cultureEntries = this.state.cultureInfo.items.map(function(item, inc){
-				while (inc >= dozen && inc < dozen + 12) { return <LinkID currId={currId} linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
+				while (inc >= dozen && inc < dozen + 12) { return <LinkID linkFromID={linkFromID} key={"item" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
 		}
 		// Display keyword search results
@@ -518,7 +516,7 @@ export default class Main extends React.Component{
 				var searchHeader = <h2>Results for '{this.state.keywords}'</h2>
 			}
 			var searchEntries = this.state.searchMatch.map(function(item, inc){
-				while (inc >= dozen && inc < dozen + 12) { return <LinkID currId={currId} linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
+				while (inc >= dozen && inc < dozen + 12) { return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
 		} else {
 			var searchHeader = "";
@@ -530,10 +528,8 @@ export default class Main extends React.Component{
 			for (let i = 0; i < pages; i++) {
 				pageArray.push(i);
 			}
-			var currPage = this.state.pages;
 			pageTabs = pageArray.map(function(element, inc){
-				var selected = inc == currPage ? "currPage" : "pageNum";
-				return <div className="col-xs-4 col-sm-3" key={inc}><div className={selected + " pageDiv"} onClick={() => turnPage(inc)}>{inc + 1}</div></div>
+				return <div className="col-xs-6 col-sm-2" key={inc} onClick={() => turnPage(inc)}>{inc + 1}</div>
 			});
 		}
 
@@ -706,8 +702,8 @@ export default class Main extends React.Component{
 						(Under construction!)
 					</div>
 				</div>
-				<div className="row mainContent">
-					<div className="col-sm-8 contentPanel">
+				<div className="row">
+					<div className="col-sm-8">
 						<a id="top"></a>
 						{panelContent}
 					</div>
@@ -730,20 +726,20 @@ export default class Main extends React.Component{
 						</h2>
 						{searchHeader}
 						{
-							pageTabs && pageArray.length > 1 ? <div className="row"><div className="col-xs-4 col-sm-3"><div className="pageDiv">Pages:</div></div>{pageTabs}</div> : ""
+							pageTabs && pageArray.length > 1 ? <div className="row"><div className="col-xs-6 col-sm-2">Pages:</div>{pageTabs}</div> : ""
 						}
 						{searchEntries}
 						{cultureEntries}
 					</div>
 				</div>
-				<div className="row related">
+				<div className="row">
 					{relatedHeader}
 				</div>
 				<div className="row">
 					{relatedItems}
 				</div>
 				<div className="row footer">
-					<div className="col-sm-2" style={{fontSize:"1.5em",textAlign:"center"}}>Contact<br/>(Under construction)<br/><em>edgarmdcesp@gmail.com</em></div>
+					<div className="col-sm-2" style={{fontSize:"1.5em",textAlign:"center"}}>Contact</div>
 					<div className="col-sm-2"><a href="https://github.com/EdgarAhDzib/" target="_blank"><img class="icon" src="assets/images/icons/github64.png" /></a></div>
 					<div className="col-sm-2"><a href="https://twitter.com/EdgarTlamatini" target="_blank"><img class="icon" src="assets/images/icons/Twitter_logo_blue.png" width="72" /></a></div>
 					<div className="col-sm-2"><a href="https://www.facebook.com/ShamansCross/" target="_blank"><img class="icon" src="assets/images/icons/fb-likebutton-online-72.png" /></a></div>

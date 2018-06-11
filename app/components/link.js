@@ -41,22 +41,35 @@ export default class LinkID extends React.Component{
 
 	}
 
+	/*
+	shouldComponentUpdate(prevProps, nextProps) {
+		console.log("prevProps");
+		console.log(prevProps);
+		console.log("nextProps");
+		console.log(nextProps);
+		return true;
+	}
+	*/
+
 	render() {
 		// console.log("Link", this.state.itemInfo.item_title + ", " + this.state.itemInfo.group);
-		var bkgd = {backgroundColor:"white"};
-		if (this.state.id == this.props.currId) {
-			bkgd = {backgroundColor:"black"};
+		if (this.state.itemInfo != "") {
+			var thumbnail = this.state.itemInfo.media.map(function(image){
+				if (image.img_ref_1 != "") {
+					return <a href="#top" key={image._id}><img src={image.img_ref_1} style={{height:50,maxWidth:130}} /></a>
+				} else {
+					return null
+				}
+			});
 		}
 
 		return (
-			<div className="col-sm-12 linkItem" height={this.props.height} onClick={this.handleClick} style={bkgd}>
+			<div className="col-sm-12" style={{marginBottom:"10px"}} height={this.props.height} onClick={this.handleClick}>
 				<div className="col-sm-6">
 					<span value={this.state.id} className="itemTitle"><a href="#top">{this.state.itemInfo.item_title + ", " + this.state.itemInfo.group}</a></span>
 				</div>
-				<div className="col-sm-6">
-					{
-						this.state.itemInfo != "" && this.state.itemInfo.hasOwnProperty("media") && this.state.itemInfo.media.length > 0 && this.state.itemInfo.media[0].img_ref_1 != "" ? <a href="#top" key={this.state.itemInfo._id}><img src={this.state.itemInfo.media[0].img_ref_1} style={{height:50,maxWidth:130}} /></a> : null
-					}
+				<div className="col-sm-6 linkItem">
+					{thumbnail}
 				</div>
 			</div>
 			)

@@ -29,9 +29,6 @@
 
 .header {
 	margin-bottom: 10px;
-	background-color: #a3fda7;
-	padding: 3%;
-	/*hover on text: #65e46b*/
 }
 
 .headerTitle {
@@ -48,27 +45,8 @@
 	margin-top: 50px;
 	/*margin-bottom: 15px;*/
 	background-color: #fdd1a3;
-	padding: 3%;
-}
-
-.pageDiv {
-	padding: 2%;
-	margin: 10px 30px;
-	text-align: center;
-	border-radius: 5px;
-}
-
-.pageNum {
-	background-color: #fda3fb;
-	transition: 0.3s;
-}
-
-.pageNum:hover {
-	background-color: #e465e2;
-}
-
-.currPage {
-	background-color: #b574b2;
+	padding-top: 15px;
+	padding-bottom: 15px;
 }
 
 .icon {
@@ -76,26 +54,4 @@
 }
 
 .linkItem {
-	margin: 5px 10px;
-	border-radius: 5px;
-}
-
-.related {
-	color: white;
-	background-color: #449645;
-	padding-left: 3%;
-	padding-right: 3%;
-	margin-top: 20px;
-	margin-bottom: 20px;
-}
-
-.mainContent {
-	padding-left: 3%;
-	padding-right: 3%;
-}
-
-.contentPanel {
-	background-color: #e6e4e2;
-	border-radius: 5px;
-	/*#b3b1b0 for hover on subject or culture*/
 }

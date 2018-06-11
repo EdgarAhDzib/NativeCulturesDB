@@ -30,15 +30,15 @@ export default class FormSearch extends React.Component{
 		return (
 			<div>
 				<form onSubmit={this.handleSubmit}>
-					<input
+					Keyword Search <input
 						value={this.state.keywords}
 						type="text"
 						id="searchForm"
 						onChange={this.handleSearch}
-						placeholder="Keyword Search"
+						placeholder={this.state.keywords}
 						className="form-control"
 					/>
-					<div className="pull-left">
+					<div className="pull-right">
 						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
 							<span className="glyphicon glyphicon-search"></span> Search 
 						</button>

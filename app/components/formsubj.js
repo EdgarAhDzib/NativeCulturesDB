@@ -45,17 +45,17 @@ export default class FormSubject extends React.Component{
 		return (
 			<div>
 				<form onSubmit={this.handleSubmit}>
-					<input
+					Browse by Subject <input
 						value={this.state.subject}
 						type="text"
 						id="subjectForm"
 						onChange={this.handleSubject}
 						list="subjects"
-						placeholder="Browse by Subject"
+						placeholder={this.state.subject}
 						className="form-control"
 					/>
 					<datalist id="subjects">{subjects}</datalist>
-					<div className="pull-left">
+					<div className="pull-right">
 						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
 							<span className="glyphicon glyphicon-search"></span> Search 
 						</button>
