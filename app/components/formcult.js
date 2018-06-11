@@ -47,17 +47,17 @@ export default class FormCulture extends React.Component{
 		return (
 			<div>
 				<form>
-					Browse by Culture <input
+					<input
 						value={this.state.culture}
 						type="text"
 						id="cultureForm"
 						onChange={this.handleCulture}
 						list="tribes"
-						placeholder={this.state.culture}
+						placeholder="Browse by Culture"
 						className="form-control"
 					/>
 					<datalist id="tribes">{tribeNames}</datalist>
-					<div className="pull-right">
+					<div className="pull-left">
 						<button type="button" class="btn btn-default btn-sm" onClick={this.handleSubmit}>
 							<span className="glyphicon glyphicon-search"></span> Search 
 						</button>
