@@ -2,4 +2,3 @@ dev
 csv_seeds
 populate_ids.js
 dump
-public/assets/js/bundle.js
