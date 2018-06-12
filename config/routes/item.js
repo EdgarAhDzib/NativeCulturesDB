@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const fs = require("fs");
+// const fs = require("fs");
 const passport = require('passport');
 
 const Item_index = require('../models/item');
@@ -108,6 +108,8 @@ router.post('/additem', (req, res) => {
 
 	var ifImgFile = new RegExp(/^data:image\/\w+;base64,/);
 	// REDO: Ensure that the strings are properly processed or at least set with default blank "" for the img_ref media properties
+	// fs package deprecated, must be replaced
+	/*
 	if(ifImgFile.test(thumbOneUrl)) {
 		newFileOnePath = 'assets/images/' + (new Date()).getTime() + "." + fileOne;
 		var dataOne = thumbOneUrl.replace(/^data:image\/\w+;base64,/, '');
@@ -139,6 +141,7 @@ router.post('/additem', (req, res) => {
 			console.log(err);
 		});
 	}
+	*/
 
 	var Media_content = new Media({
 		youtube: req.body.body.youtube,
