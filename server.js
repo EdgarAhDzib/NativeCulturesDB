@@ -72,7 +72,7 @@ const sources = require("./config/routes/sources");
 const subjects = require("./config/routes/subjects");
 const login = require("./config/routes/login");
 const user = require("./config/routes/user");
-const populate = require("./populate_ids");
+// const populate = require("./populate_ids");
 const rrn = require("./rrn_api");
 
 app.use('/', cultures);
@@ -83,7 +83,7 @@ app.use('/', sources);
 app.use('/', subjects);
 app.use('/', login);
 app.use('/', user);
-app.use('/', populate);
+// app.use('/', populate);
 app.use('/', rrn);
 
 app.use(cookieParser);
