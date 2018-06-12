@@ -639,7 +639,7 @@ export default class Main extends React.Component{
 					</div>
 					: null
 				}
-				<HeaderDiv getCultureForm={getCultureForm} getSearchForm={getSearchForm} userLogout={userLogout} loggedIn={loggedIn} />
+				<HeaderDiv getCultureForm={getCultureForm} getSearchForm={getSearchForm} updatePanel={this.updatePanel} userLogout={userLogout} loggedIn={loggedIn} />
 				<div className="row"><a id="top"></a></div>
 				<div className="row mainContent">
 					<div className="col-sm-8 contentPanel">
