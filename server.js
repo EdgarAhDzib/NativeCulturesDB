@@ -5,7 +5,6 @@ var path = require('path');
 const mongoose = require('mongoose');
 var app = express();
 var bodyParser = require('body-parser');
-var fs = require('fs');
 const passport = require('passport');
 
 var cookieParser = require('cookie-parser');
