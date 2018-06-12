@@ -572,7 +572,7 @@ export default class Main extends React.Component{
 			var display = this.state.itemInfo.display != "NULL" ? this.state.itemInfo.display : "";
 			var primDoc = this.state.itemInfo.prim_doc != "NULL" ? this.state.itemInfo.prim_doc : "";
 			var ethnFields = this.state.itemInfo.fields.map(function(field){
-				return <span className="ethnTab" key={field._id}><LinkSubj linkForSubj={linkForSubj} ethn_id={field.ethn_id}/></span>
+				return <span key={field._id}> | <LinkSubj linkForSubj={linkForSubj} ethn_id={field.ethn_id}/> | </span>
 				//{field.ethn_id} . </span>
 			});
 			var sourceRef = this.state.itemInfo.source_refs.map(function(ref, inc){
@@ -592,7 +592,7 @@ export default class Main extends React.Component{
 		switch (this.state.mainPanel) {
 			case "item" :
 				var panelContent = <div>
-					<div className="titleRow">
+					<div>
 						<span className="headerTitle">{this.state.itemInfo.item_title}</span> <span className="headerSub"><LinkCult linkForCult={linkForCult} value={this.state.itemInfo.group} /></span>
 					</div>
 					<div className="row">
@@ -602,7 +602,7 @@ export default class Main extends React.Component{
 					{img_ref_4}
 					</div>
 					<div>{youtube}</div>
-					<div className="ethnRow">{ethnFields}</div>
+					<div>{ethnFields}</div>
 					<div>{sourceRef}</div>
 					<div>{ethnNotes}</div>
 					<div>{mainDesc}</div>
@@ -688,11 +688,11 @@ export default class Main extends React.Component{
 					<div className="col-xs-2"><FormSearch setFormKeyword={this.setFormKeyword} /></div>
 					<div className="col-xs-2">
 						<FormCulture setFormCult={this.setFormCult} /><br/>
+						<div onClick={() => this.updatePanel("cultalpha")} >Cultures List</div>
 					</div>
 					<div className="col-xs-2"><FormSubject setFormSubj={this.setFormSubj} /></div>
 					<div className="col-xs-2">
-						<div className="headerBtn" onClick={() => this.updatePanel("aboutnacd")} >About</div>
-						<div className="headerBtn" onClick={() => this.updatePanel("cultalpha")} >Cultures List</div>
+						<div onClick={() => this.updatePanel("aboutnacd")} >About</div>
 					</div>
 					<div className="col-xs-2">
 						{

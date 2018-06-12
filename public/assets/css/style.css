@@ -2,6 +2,7 @@
 	background: url('./modal_screen.jpg');
 	display:inline-block;
 	flex-wrap: wrap;
+	/*width: 700px;*/
 	margin: auto;
 	height: 600px;
 	padding: 20px;
@@ -28,8 +29,6 @@
 
 .header {
 	margin-bottom: 10px;
-	background-color: #a3fda7;
-	padding: 3%;
 }
 
 .headerTitle {
@@ -61,22 +60,7 @@
 
 .headerSub {
 	font-size: 2em;
-	margin-left: 30px;
-	margin-bottom: 5px;
-}
-
-.headerSub, .ethnTab {
-	border: solid #b3b1b0;
-	border-radius: 5px;
-	padding: 5px;
-}
-
-.ethnTab {
-	margin: 5px;
-}
-
-.headerSub:hover, .ethnTab:hover {
-	background-color: #b3b1b0;
+	padding-left: 30px;
 }
 
 .footer {
@@ -113,23 +97,5 @@
 .contentPanel {
 	background-color: #e6e4e2;
 	border-radius: 5px;
-}
-
-.headerBtn {
-	border: solid #65e46b;
-	border-radius: 5px;
-	margin-bottom: 10px;
-	padding-left: 3px;
-}
-
-.headerBtn:hover {
-	background-color: #65e46b;
-}
-
-.titleRow {
-	margin-bottom: 10px;
-}
-
-.ethnRow {
-	margin: 10px 0px;
+	/*#b3b1b0 for hover on subject or culture*/
 }

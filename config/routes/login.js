@@ -68,7 +68,7 @@ router.get("/success",  (req, res) => {
 		res.json(sendObj);
 		return;
 	} else {
-		// console.log("Login failed, do nothing");
+		console.log("Login failed, do nothing");
 		res.json({ loggedIn: false });
 		return;
 	}
