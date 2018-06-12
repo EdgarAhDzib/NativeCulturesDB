@@ -98,7 +98,7 @@ app.use(function(req, res, next){
 });
 
 var databaseUri = "mongodb://localhost/native";
-// var MONGODB_URI = require('./keys.js');
+var MONGODB_URI = require('./keys.js');
 
 //Option whether to connect to remote server or localhost
 if (process.env.MONGODB_URI) {
