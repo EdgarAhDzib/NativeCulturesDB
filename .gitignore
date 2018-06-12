@@ -1,5 +1,4 @@
 dev
-node_modules
 csv_seeds
 populate_ids.js
 dump
