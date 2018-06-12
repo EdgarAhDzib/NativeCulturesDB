@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var request = require('request');
+// var request = require('request');
 const Item_index = require('./config/models/item');
 // const Test = require('./config/models/test');
 const Tribe = require('./config/models/cultures');
