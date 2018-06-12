@@ -2,3 +2,9 @@ dev
 csv_seeds
 populate_ids.js
 dump
+node_modules
+keys.js
+nahualtocaitl.js
+rrn_api.js
+public/assets/js
+public/assets/images
