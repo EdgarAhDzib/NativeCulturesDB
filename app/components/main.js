@@ -2,9 +2,7 @@ var React = require("react");
 var axios = require("axios");
 var qs = require("qs");
 // import FormID from "./formid";
-import FormCulture from "./formcult";
-import FormSubject from "./formsubj";
-import FormSearch from "./formsearch";
+import HeaderDiv from "./headerdiv";
 import LinkID from "./link";
 import LinkSubj from "./subj";
 import LinkCult from "./cult";
@@ -28,10 +26,7 @@ export default class Main extends React.Component{
 			cultureInfo : "",
 			allCultures: "",
 			id: "",
-			culture: "",
 			subject: "",
-			// cultMatches: [],
-			// subjMatches: [],
 			searchMatch: [],
 			related: [],
 			keywords: "",
@@ -55,9 +50,6 @@ export default class Main extends React.Component{
 			pages: 0
 		}
 		// this.setFormID = this.setFormID.bind(this);
-		this.setFormCult = this.setFormCult.bind(this);
-		this.setFormSubj = this.setFormSubj.bind(this);
-		this.setFormKeyword = this.setFormKeyword.bind(this);
 		this.linkFromID = this.linkFromID.bind(this);
 		this.linkForSubj = this.linkForSubj.bind(this);
 		this.linkForCult = this.linkForCult.bind(this);
@@ -79,6 +71,8 @@ export default class Main extends React.Component{
 		this.submitUserForm = this.submitUserForm.bind(this);
 		this.showRelatedItems = this.showRelatedItems.bind(this);
 		this.turnPage = this.turnPage.bind(this);
+		this.getCultureForm = this.getCultureForm.bind(this);
+		this.getSearchForm = this.getSearchForm.bind(this);
 	}
 	/*
 	setFormID(form) {
@@ -86,8 +80,6 @@ export default class Main extends React.Component{
 			id: form.id,
 			culture: form.culture,
 			subject: form.subject,
-			cultMatches: [],
-			subjMatches: [],
 			keywords: ""
 		});
 		if (form.id != "") {
@@ -97,62 +89,6 @@ export default class Main extends React.Component{
 		}
 	}
 	*/
-
-	setFormCult(form) {
-		this.setState({
-			// id: form.id,
-			culture: form.culture,
-			subject: form.subject,
-			cultMatches: [],
-			subjMatches: [],
-			keywords: "",
-			searchMatch: [],
-			pages: 0
-		});
-		if (form.culture != "") {
-			axios.get('/culture/' + form.culture).then(function(response) {
-				this.setState({cultureInfo: response.data});
-			}.bind(this) );
-		}
-	}
-
-	setFormSubj(form) {
-		this.setState({
-			// id: form.id,
-			culture: form.culture,
-			subject: form.subject,
-			cultMatches: [],
-			subjMatches: [],
-			keywords: "",
-			searchMatch: [],
-			pages: 0
-		});
-		if (form.subject != "") {
-			axios.get('/subjects/' + form.subject).then(function(response) {
-				this.setState({cultureInfo: response.data});
-			}.bind(this) );
-		}	
-	}
-
-	setFormKeyword(results) {
-		this.setState({
-			id: "",
-			culture: "",
-			subject: "",
-			cultMatches: [],
-			subjMatches: [],
-			keywords: results,
-			cultureInfo: [],
-			pages: 0
-		});
-		if (results != "") {
-			// console.log(results);
-			axios.post('/search', {keywords: results}).then(function(response) {
-				// console.log(response.data);
-				this.setState({searchMatch: response.data});
-			}.bind(this) );
-		}
-	}
 
 	submitUserForm(form) {
 		// axios POST if form contains valid fields
@@ -299,9 +235,6 @@ export default class Main extends React.Component{
 	linkForSubj(subj) {
 		this.setState({
 			subject : subj,
-			culture: "",
-			cultMatches: [],
-			subjMatches: [],
 			keywords: "",
 			searchMatch: [],
 			pages: 0
@@ -315,10 +248,7 @@ export default class Main extends React.Component{
 
 	linkForCult(culture) {
 		this.setState({
-			culture : culture,
-			subject: "",
-			cultMatches: [],
-			subjMatches: [],
+			subject: culture,
 			keywords: "",
 			searchMatch: [],
 			pages: 0
@@ -422,7 +352,27 @@ export default class Main extends React.Component{
 	turnPage(page) {
 		this.setState({pages:page});
 	}
-	
+
+	getCultureForm(data, term) {
+		this.setState({
+			subject: term,
+			keywords: "",
+			cultureInfo: data,
+			searchMatch: [],
+			pages: 0
+		});
+	}
+
+	getSearchForm(data, keywords) {
+		this.setState({
+			subject: "",
+			keywords: keywords,
+			cultureInfo: "",
+			searchMatch: data,
+			pages: 0
+		});
+	}
+
 	componentDidMount() {
 		axios.get("/randitem/").then(function(response) {
 			this.setState({itemInfo: response.data});
@@ -476,6 +426,9 @@ export default class Main extends React.Component{
 		var linkForSubj = this.linkForSubj;
 		var linkForCult = this.linkForCult;
 		var turnPage = this.turnPage;
+		var getCultureForm = this.getCultureForm;
+		var getSearchForm = this.getSearchForm;
+		var userLogout = this.userLogout;
 		var youtube = "";
 		var img_ref_1 = "";
 		var img_ref_2 = "";
@@ -493,6 +446,7 @@ export default class Main extends React.Component{
 		itemProps.imgThumbFour = this.state.imgThumbFour;
 		var itemInfo = this.state.itemInfo;
 		var userInfo = this.state.userInfo;
+		var loggedIn = this.state.loggedIn;
 		// Item may be edited only if original to user
 		var editable = false;
 		var pages = 0;
@@ -512,7 +466,7 @@ export default class Main extends React.Component{
 			});
 		}
 		// Display keyword search results
-		if (this.state.searchMatch && this.state.searchMatch.length > 0) {
+		if (this.state.keywords && this.state.searchMatch && this.state.searchMatch.length > 0) {
 			pages = Math.ceil(this.state.searchMatch.length / 12);
 			if (this.state.keywords != "") {
 				var searchHeader = <h2>Results for '{this.state.keywords}'</h2>
@@ -520,6 +474,9 @@ export default class Main extends React.Component{
 			var searchEntries = this.state.searchMatch.map(function(item, inc){
 				while (inc >= dozen && inc < dozen + 12) { return <LinkID linkFromID={linkFromID} key={"search" + item._id} value={item._id} item_title={item.item_title} height={50} /> }
 			});
+		} else if (this.state.keywords && this.state.searchMatch && this.state.searchMatch.length == 0) {
+			var searchHeader = <h2>No results found for '{this.state.keywords}'</h2>;
+			var searchEntries = "";
 		} else {
 			var searchHeader = "";
 			var searchEntries = "";
@@ -533,7 +490,7 @@ export default class Main extends React.Component{
 			var currPage = this.state.pages;
 			pageTabs = pageArray.map(function(element, inc){
 				var selected = inc == currPage ? "currPage" : "pageNum";
-				return <div className="col-xs-4 col-sm-3" key={inc}><div className={selected + " pageDiv"} onClick={() => turnPage(inc)}>{inc + 1}</div></div>
+				return <div className="col-xs-4 col-sm-3" key={inc}><div className={selected + " pageDiv"} onClick={() => turnPage(inc)}><strong>{inc + 1}</strong></div></div>
 			});
 		}
 
@@ -541,7 +498,7 @@ export default class Main extends React.Component{
 		if (this.state.mainPanel == "item" && this.state.related && this.state.related.length > 0) {
 			var relatedHeader = <h3>Related Items</h3>
 			var relatedItems = this.state.related.map(function(item, inc){
-				while (inc < 12) { return <div className="col-md-3 col-sm-4 col-xs-6" style={{height:"100px"}}><LinkID linkFromID={linkFromID} key={"search" + inc} value={item._id} item_title={item.item_title} height={100} /></div> }
+				while (inc < 12) { return <div key={inc} className="col-md-3 col-sm-4 col-xs-6" style={{height:"100px"}}><LinkID linkFromID={linkFromID} key={"search" + inc} value={item._id} item_title={item.item_title} height={100} /></div> }
 			});
 		} else {
 			var relatedHeader = "";
@@ -682,32 +639,10 @@ export default class Main extends React.Component{
 					</div>
 					: null
 				}
-				<div className="row header">
-					<div className="col-xs-2"><span style={{fontSize:"2.5em"}}>NACD</span><br/>The Native American Cultures Database</div>
-					<div className="col-xs-2"><FormSearch setFormKeyword={this.setFormKeyword} /></div>
-					<div className="col-xs-2">
-						<FormCulture setFormCult={this.setFormCult} /><br/>
-					</div>
-					<div className="col-xs-2"><FormSubject setFormSubj={this.setFormSubj} /></div>
-					<div className="col-xs-2">
-						<div className="headerBtn" onClick={() => this.updatePanel("aboutnacd")} >About</div>
-						<div className="headerBtn" onClick={() => this.updatePanel("cultalpha")} >Cultures List</div>
-					</div>
-					<div className="col-xs-2">
-						{
-							this.state.loggedIn ? 
-								<div>
-									<button onClick={this.userLogout}>Logout</button>
-									<span onClick={() => this.updatePanel("userinfo")} >My Profile</span>
-								</div>
-							: <div>Sign Up / Log In</div>
-						}
-						(Under construction!)
-					</div>
-				</div>
+				<HeaderDiv getCultureForm={getCultureForm} getSearchForm={getSearchForm} userLogout={userLogout} loggedIn={loggedIn} />
+				<div className="row"><a id="top"></a></div>
 				<div className="row mainContent">
 					<div className="col-sm-8 contentPanel">
-						<a id="top"></a>
 						{panelContent}
 					</div>
 					<div className="col-sm-4">
@@ -717,11 +652,6 @@ export default class Main extends React.Component{
 							{ editable ? <span> | <span onClick={this.showEditModal}>Edit Item</span>  | <span>Remove Item</span></span> : null}
 							</h2>
 						: null }
-						<h2>
-							{
-								this.state.culture ? <span>Results for {this.state.culture}</span> : ""
-							}
-						</h2>
 						<h2>
 							{
 								this.state.subject ? <span>Results for {this.state.subject}</span> : ""

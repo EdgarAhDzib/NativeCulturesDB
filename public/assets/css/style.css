@@ -41,7 +41,7 @@
 
 .pageDiv {
 	padding: 2%;
-	margin: 10px 30px;
+	margin: 10px 10px;
 	text-align: center;
 	border-radius: 5px;
 }
@@ -57,6 +57,7 @@
 
 .currPage {
 	background-color: #b574b2;
+	color: white;
 }
 
 .headerSub {
@@ -106,8 +107,7 @@
 }
 
 .mainContent {
-	padding-left: 3%;
-	padding-right: 3%;
+	padding: 50px 3%;
 }
 
 .contentPanel {
@@ -132,4 +132,10 @@
 
 .ethnRow {
 	margin: 10px 0px;
+}
+
+.sticky {
+	position: fixed;
+	top: 0;
+	width: 100%;
 }
