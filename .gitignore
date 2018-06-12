@@ -1,9 +1,6 @@
 dev
 node_modules
 csv_seeds
-keys.js
 populate_ids.js
-nahualtocaitl.js
 dump
-public/assets/images
 public/assets/js/bundle.js
